@@ -21,6 +21,7 @@ from src.backend.investors.dalio import DalioInvestor
 from src.backend.investors.klarman import KlarmanInvestor
 from src.backend.investors.terry_smith import TerrySmithInvestor
 from src.backend.investors.icahn import IcahnInvestor
+from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.scoring.aggregator import build_consensus
 
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ INVESTORS = [
     KlarmanInvestor(),
     TerrySmithInvestor(),
     IcahnInvestor(),
+    AKOQualityInvestor(),
 ]
 
 # Per-investor voice and style guidance for Claude prompts
@@ -83,6 +85,17 @@ INVESTOR_VOICES: dict[str, str] = {
         "spin-off, or management change unlock significant value? Express contempt for "
         "entrenched boards and CEOs who don't own their own stock. Remember your motto: "
         "you are a liberator of companies, not a destroyer."
+    ),
+    "AKO Quality": (
+        "You are the AKO Capital investment team, practitioners of quality investing as "
+        "described in 'Quality Investing' by Cunningham, Eide & Hargreaves. Speak with a "
+        "calm, systematic, long-term European perspective. Reference the three pillars: "
+        "strong predictable cash generation, sustainably high ROIC, and attractive "
+        "reinvestment opportunities. Identify which of the 12 quality patterns applies "
+        "(recurring revenue, toll roads, friendly middlemen, pricing power, brand strength, "
+        "innovation dominance, etc.). Check for the three pitfalls: cyclicality, "
+        "technological disruption, and dependency. Emphasise that the best margin of "
+        "safety comes from the depth of competitive advantage, not a low entry price."
     ),
 }
 
@@ -163,7 +176,7 @@ async def _generate_consensus_async(
         for s in investor_scores
     )
     prompt = (
-        f"Eight legendary investors evaluated {ticker} ({company_name}).\n"
+        f"Nine legendary investors evaluated {ticker} ({company_name}).\n"
         f"Their verdicts: {score_summary}\n"
         f"Consensus score: {weighted_avg:.0f}/100 ({agreement_level})\n\n"
         f"Write exactly one paragraph (3-4 sentences) summarising where the investors agree "

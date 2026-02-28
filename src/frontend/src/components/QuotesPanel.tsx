@@ -51,6 +51,12 @@ const QUOTES: Record<string, InvestorQuotes> = {
     'Hold': 'There\'s value here but the discount isn\'t wide enough yet. I\'d want a bigger margin before I start making phone calls to the CEO.',
     'Avoid': 'I need two things: cheap assets and something to fix. This has neither. I\'m not in the business of fighting well-run companies at full prices.',
   },
+  'AKO Quality': {
+    'Strong Buy': 'This is the virtuous circle at its finest — cash generated, reinvested at high returns, generating more cash. The market sees a premium multiple; we see a decade of compounding in plain sight.',
+    'Buy': 'Quality at a fair price. Sustained ROIC, real cash conversion, and consistent growth tell us this business has already won in its industry. We hold for the long term.',
+    'Hold': 'The quality characteristics are present, but one or more pillars need more consistency. Quality companies are worth waiting for — patience is part of the process.',
+    'Avoid': 'The three pillars must all hold — strong cash generation, sustained high ROIC, and attractive reinvestment. One or two is not enough. We will wait for a genuine quality compounder.',
+  },
 }
 
 interface QuotesPanelProps {
