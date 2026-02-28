@@ -19,6 +19,7 @@ WEIGHTS: dict[str, float] = {
     "Dalio": 0.8,
     "Klarman": 1.0,
     "Terry Smith": 1.0,
+    "Icahn": 1.0,
 }
 
 

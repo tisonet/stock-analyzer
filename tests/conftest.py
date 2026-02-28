@@ -296,3 +296,128 @@ def net_net_data() -> FinancialData:
         cash_flow=cashflow,
         history=history,
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Icahn activist target (cheap assets, strong FCF, low debt, governance gap)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.fixture
+def icahn_target_data() -> FinancialData:
+    """Classic Icahn target: cheap P/B, high FCF yield, low D/E, low insider ownership."""
+    revs    = [8e9,  7.8e9, 7.6e9, 7.4e9, 7.2e9]
+    op_incs = [1.2e9, 1.1e9, 1.0e9, 0.9e9, 0.85e9]
+    net_incs = [0.8e9, 0.75e9, 0.7e9, 0.65e9, 0.6e9]
+    gp      = [3.0e9, 2.9e9, 2.8e9, 2.7e9, 2.6e9]
+
+    income = _make_income_stmt(revs, op_incs, net_incs, gp)
+
+    ta =   [25e9,  24e9,   23e9,  22e9,  21e9]
+    ca =   [10e9,   9.5e9,  9.0e9, 8.5e9,  8e9]
+    cl =   [ 4e9,   3.8e9,  3.6e9, 3.4e9, 3.2e9]
+    tl =   [11e9,  10.5e9, 10.0e9, 9.5e9, 9.0e9]
+    eq =   [14e9,  13.5e9, 13.0e9, 12.5e9, 12e9]
+    debt = [ 5.6e9, 5.4e9,  5.2e9,  5.0e9, 4.8e9]  # D/E = 5.6/14 = 0.4x
+    sh =   [2.0e9, 2.05e9, 2.1e9, 2.15e9, 2.2e9]
+
+    balance = _make_balance_sheet(ta, ca, cl, tl, eq, debt, sh)
+    cashflow = _make_cashflow(
+        [6e9, 5.5e9, 5.0e9, 4.8e9, 4.5e9],   # strong OCF
+        [1e9, 0.9e9, 0.9e9, 0.8e9, 0.8e9],    # low CapEx → FCF ≈ 5B latest
+    )
+    # FCF yield = 5B / 50B market cap = 10% ✅
+    prices = [20, 22, 21, 23, 22, 24, 23, 25] * 315
+    history = _make_history(prices[:2517])
+
+    return FinancialData(
+        ticker="ICNT",
+        info={
+            "trailingPE": 8.0,
+            "priceToBook": 0.8,             # P/B < 1.5 ✅
+            "debtToEquity": 40.0,           # 0.4x D/E ✅
+            "currentRatio": 2.5,
+            "marketCap": 50e9,
+            "currentPrice": 25.0,
+            "sharesOutstanding": 2_000_000_000,
+            "dividendYield": 0.02,
+            "trailingEps": 0.4,
+            "bookValue": 7.0,
+            "heldPercentInsiders": 0.02,    # 2% — governance gap ✅
+            "beta": 1.1,
+            "sector": "Industrials",
+            "industry": "Diversified Industrials",
+            "country": "United States",
+            "longName": "Icahn Target Corp",
+            "longBusinessSummary": "A diversified conglomerate with underutilised assets.",
+            "revenueGrowth": 0.02,
+            "earningsGrowth": 0.03,
+            "enterpriseToEbitda": 6.0,      # EV/EBITDA < 8x ✅
+            "returnOnEquity": 0.08,         # 8% ROE — positive but fixable ✅
+        },
+        income_stmt=income,
+        balance_sheet=balance,
+        cash_flow=cashflow,
+        history=history,
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Anti-Icahn: expensive, well-managed, insider-owned — no activist angle
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.fixture
+def non_icahn_target_data() -> FinancialData:
+    """Founder-led tech company: expensive P/B, high insider ownership, strong ROE."""
+    revs    = [50e9, 48e9, 45e9, 42e9, 40e9]
+    op_incs = [15e9, 14e9, 13e9, 12e9, 11e9]
+    net_incs = [11e9, 10e9,  9e9,  8e9,  7e9]
+    gp      = [25e9, 24e9, 22e9, 21e9, 20e9]
+
+    income = _make_income_stmt(revs, op_incs, net_incs, gp)
+
+    ta =   [80e9, 78e9, 75e9, 72e9, 70e9]
+    ca =   [20e9, 19e9, 18e9, 17e9, 16e9]
+    cl =   [15e9, 14e9, 13e9, 12e9, 11e9]
+    tl =   [60e9, 58e9, 55e9, 52e9, 50e9]
+    eq =   [20e9, 20e9, 20e9, 20e9, 20e9]
+    debt = [50e9, 48e9, 46e9, 44e9, 42e9]   # D/E = 50/20 = 2.5x ❌
+
+    balance = _make_balance_sheet(ta, ca, cl, tl, eq, debt)
+    cashflow = _make_cashflow(
+        [3e9,  2.8e9, 2.5e9, 2.2e9, 2.0e9],   # low OCF relative to market cap
+        [2.5e9, 2.4e9, 2.3e9, 2.2e9, 2.0e9],  # high CapEx → FCF ≈ 0.5B
+    )
+    # FCF yield = 0.5B / 300B = 0.17% ❌
+    prices = list(range(100, 400)) + list(range(400, 100, -1))
+    history = _make_history((prices * 6)[:2517])
+
+    return FinancialData(
+        ticker="NICT",
+        info={
+            "trailingPE": 30.0,
+            "priceToBook": 5.0,             # P/B > 1.5 ❌
+            "debtToEquity": 250.0,          # 2.5x D/E ❌
+            "currentRatio": 1.3,
+            "marketCap": 300e9,
+            "currentPrice": 300.0,
+            "sharesOutstanding": 1_000_000_000,
+            "dividendYield": 0.01,
+            "trailingEps": 11.0,
+            "bookValue": 20.0,
+            "heldPercentInsiders": 0.25,    # 25% — entrenched ❌
+            "beta": 0.9,
+            "sector": "Technology",
+            "industry": "Software",
+            "country": "United States",
+            "longName": "No Icahn Target Inc",
+            "longBusinessSummary": "A founder-led technology company with a strong competitive moat.",
+            "revenueGrowth": 0.12,
+            "earningsGrowth": 0.15,
+            "enterpriseToEbitda": 18.0,     # too expensive ❌
+            "returnOnEquity": 0.25,         # 25% ROE — already excellent ❌
+        },
+        income_stmt=income,
+        balance_sheet=balance,
+        cash_flow=cashflow,
+        history=history,
+    )
