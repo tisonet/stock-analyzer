@@ -1,0 +1,37 @@
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# SQLite cache
+*.db
+*.sqlite
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Node / frontend
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.vite/
+
+# Claude internal
+.claude/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
