@@ -1,0 +1,64 @@
+import type { VerdictType } from '../types/analysis'
+
+type InvestorQuotes = Record<VerdictType, string>
+
+const QUOTES: Record<string, InvestorQuotes> = {
+  Buffett: {
+    'Strong Buy': 'It\'s far better to buy a wonderful company at a fair price than a fair company at a wonderful price.',
+    'Buy': 'Whether we\'re talking about socks or stocks, I like buying quality merchandise when it is marked down.',
+    'Hold': 'Our favourite holding period is forever — but only for businesses we truly understand.',
+    'Avoid': 'Rule #1: Never lose money. Rule #2: Never forget Rule #1.',
+  },
+  Munger: {
+    'Strong Buy': 'Invert, always invert — I have found a business that passes every test of inversion.',
+    'Buy': 'All I want to know is where I\'m going to die, so I\'ll never go there. This one I\'d go to.',
+    'Hold': 'Show me the incentive and I\'ll show you the outcome. Watch management carefully.',
+    'Avoid': 'It\'s not supposed to be easy. Anyone who finds it easy is stupid.',
+  },
+  Graham: {
+    'Strong Buy': 'The margin of safety is always dependent on the price paid. For this one, it is substantial.',
+    'Buy': 'Mr. Market is offering you a reasonable price today. The intelligent investor takes it.',
+    'Hold': 'The investor\'s chief problem — and even his worst enemy — is likely to be himself.',
+    'Avoid': 'Confronted with a challenge to distill the secret of sound investment into three words, we venture the motto: Margin of Safety.',
+  },
+  Lynch: {
+    'Strong Buy': 'Know what you own, and know why you own it. I own this one — it\'s a perfect ten-bagger candidate.',
+    'Buy': 'Behind every stock is a company. Find out what it\'s doing. This one\'s doing the right things.',
+    'Hold': 'The person who turns over the most rocks wins. Keep watching this one.',
+    'Avoid': 'Never invest in any idea you can\'t illustrate with a crayon. This one needs a lawyer.',
+  },
+  Dalio: {
+    'Strong Buy': 'The biggest mistake investors make is to believe that what happened in the recent past is likely to persist. This one is ready for all seasons.',
+    'Buy': 'He who lives by the crystal ball will eat shattered glass. But this company can weather most economic environments.',
+    'Hold': 'Diversify across economic environments. This stock performs well in some, poorly in others.',
+    'Avoid': 'Pain plus reflection equals progress. This company has pain, but reflection is needed before investing.',
+  },
+  Klarman: {
+    'Strong Buy': 'Value investing is at its core the marriage of a contrarian streak and a calculator. The math works here.',
+    'Buy': 'The stock market is filled with individuals who know the price of everything, but the value of nothing. This is one the market has underpriced.',
+    'Hold': 'Successful value investing requires a great deal of hard work, unusually strict discipline, and a long-term investment horizon.',
+    'Avoid': 'The biggest challenge is maintaining the required discipline when so many market participants are getting rich. But not with this one.',
+  },
+  'Terry Smith': {
+    'Strong Buy': 'Buy good companies, don\'t overpay, do nothing. This one ticks all three boxes — high ROCE, strong cash conversion, and a sensible price.',
+    'Buy': 'A high-quality business at a fair price. The ROCE and gross margins tell you this is a genuine compounder worth owning for years.',
+    'Hold': 'The business quality is there, but the price demands patience. I\'d rather hold than trade — doing nothing is usually the right answer.',
+    'Avoid': 'I\'d rather own nothing than a bad business at any price. Low margins and poor capital returns are permanent problems, not temporary ones.',
+  },
+}
+
+interface QuotesPanelProps {
+  investor: string
+  verdict: VerdictType
+}
+
+export default function QuotesPanel({ investor, verdict }: QuotesPanelProps) {
+  const investorQuotes = QUOTES[investor]
+  if (!investorQuotes) return null
+  const quote = investorQuotes[verdict]
+  return (
+    <blockquote className="mt-3 border-l-2 border-gray-600 pl-3">
+      <p className="text-gray-400 text-xs italic leading-relaxed">"{quote}"</p>
+    </blockquote>
+  )
+}
