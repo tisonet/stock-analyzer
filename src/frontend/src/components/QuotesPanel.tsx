@@ -45,6 +45,12 @@ const QUOTES: Record<string, InvestorQuotes> = {
     'Hold': 'The business quality is there, but the price demands patience. I\'d rather hold than trade — doing nothing is usually the right answer.',
     'Avoid': 'I\'d rather own nothing than a bad business at any price. Low margins and poor capital returns are permanent problems, not temporary ones.',
   },
+  'Icahn': {
+    'Strong Buy': 'Good assets, bad management — that\'s my sweet spot. I\'m buying a large stake, I\'m calling the board, and we\'re fixing this. The shareholders will thank me.',
+    'Buy': 'The assets are cheap and the cash is real. Management just needs a nudge — or a shove. I\'ve done it before and I\'ll do it here.',
+    'Hold': 'There\'s value here but the discount isn\'t wide enough yet. I\'d want a bigger margin before I start making phone calls to the CEO.',
+    'Avoid': 'I need two things: cheap assets and something to fix. This has neither. I\'m not in the business of fighting well-run companies at full prices.',
+  },
 }
 
 interface QuotesPanelProps {

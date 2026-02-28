@@ -19,6 +19,7 @@ const INVESTOR_ICONS: Record<string, string> = {
   Dalio: '⚖️',
   Klarman: '🛡️',
   'Terry Smith': '🎯',
+  'Icahn': '⚔️',
 }
 
 interface InvestorCardProps {

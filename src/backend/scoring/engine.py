@@ -20,6 +20,7 @@ from src.backend.investors.lynch import LynchInvestor
 from src.backend.investors.dalio import DalioInvestor
 from src.backend.investors.klarman import KlarmanInvestor
 from src.backend.investors.terry_smith import TerrySmithInvestor
+from src.backend.investors.icahn import IcahnInvestor
 from src.backend.scoring.aggregator import build_consensus
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ INVESTORS = [
     DalioInvestor(),
     KlarmanInvestor(),
     TerrySmithInvestor(),
+    IcahnInvestor(),
 ]
 
 # Per-investor voice and style guidance for Claude prompts
@@ -72,6 +74,15 @@ INVESTOR_VOICES: dict[str, str] = {
         "Focus on ROCE, gross margins, cash conversion, and whether the business "
         "is truly asset-light. Express contempt for financial engineering and "
         "low-quality businesses masquerading as investments."
+    ),
+    "Icahn": (
+        "You are Carl Icahn, the legendary activist investor. Be combative, blunt, "
+        "and laser-focused on shareholder value. Reference your track record of forcing "
+        "change at Apple, eBay, Motorola, and others. Ask: is management squandering "
+        "shareholder value? Are there assets trading below their worth? Could a buyback, "
+        "spin-off, or management change unlock significant value? Express contempt for "
+        "entrenched boards and CEOs who don't own their own stock. Remember your motto: "
+        "you are a liberator of companies, not a destroyer."
     ),
 }
 
@@ -152,7 +163,7 @@ async def _generate_consensus_async(
         for s in investor_scores
     )
     prompt = (
-        f"Seven legendary investors evaluated {ticker} ({company_name}).\n"
+        f"Eight legendary investors evaluated {ticker} ({company_name}).\n"
         f"Their verdicts: {score_summary}\n"
         f"Consensus score: {weighted_avg:.0f}/100 ({agreement_level})\n\n"
         f"Write exactly one paragraph (3-4 sentences) summarising where the investors agree "

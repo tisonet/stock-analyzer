@@ -68,7 +68,7 @@ export default function Analysis() {
             </h2>
             <p className="text-gray-500 max-w-md mx-auto">
               Enter a ticker symbol above to get a comprehensive analysis from Buffett, Munger,
-              Graham, Lynch, Dalio, Klarman, and Terry Smith.
+              Graham, Lynch, Dalio, Klarman, Terry Smith, and Carl Icahn.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto mt-8 text-left">
               {[
@@ -79,6 +79,7 @@ export default function Analysis() {
                 { icon: '⚖️', name: 'Ray Dalio', style: 'All-weather + macro' },
                 { icon: '🛡️', name: 'Seth Klarman', style: 'Deep value + downside first' },
                 { icon: '🎯', name: 'Terry Smith', style: 'Quality compounder + ROCE' },
+                { icon: '⚔️', name: 'Carl Icahn', style: 'Activist + undervalued assets' },
               ].map((inv) => (
                 <div
                   key={inv.name}
