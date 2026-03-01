@@ -1,5 +1,11 @@
 export type VerdictType = 'Strong Buy' | 'Buy' | 'Hold' | 'Avoid'
 
+/** Constant used to identify and separate the moat score from investor scores. */
+export const MOAT_INVESTOR_NAME = 'Moat Score' as const
+
+/** Verdict labels returned by MoatInvestor (maps to 75/55/40 score thresholds). */
+export type MoatStrengthLabel = 'Wide Moat' | 'Narrow Moat' | 'Weak Moat' | 'No Moat'
+
 export interface Rule {
   name: string
   passed: boolean

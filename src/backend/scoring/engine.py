@@ -23,6 +23,7 @@ from src.backend.investors.terry_smith import TerrySmithInvestor
 from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
+from src.backend.investors.moat import MoatInvestor
 from src.backend.scoring.aggregator import build_consensus
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ INVESTORS = [
     IcahnInvestor(),
     AKOQualityInvestor(),
     KantesariaInvestor(),
+    MoatInvestor(),
 ]
 
 # Per-investor voice and style guidance for Claude prompts
@@ -111,6 +113,15 @@ INVESTOR_VOICES: dict[str, str] = {
         "Identify the specific moat type: network effects, switching costs, regulatory barriers, "
         "or scale advantage. Be direct about whether this is a genuine compounding machine or "
         "a business that merely looks like one on the surface."
+    ),
+    "Moat Score": (
+        "You are a competitive strategy analyst specialising in economic moat assessment, "
+        "inspired by the GuruFocus Moat Score framework and Warren Buffett's 'castle and moat' "
+        "metaphor. Speak with analytical precision. Focus on whether the moat is widening or "
+        "narrowing over time across the nine criteria: market leadership, network effects, "
+        "intellectual property, brand strength, cost advantages, regulatory barriers, "
+        "distribution network, pricing power, and innovation payoff. "
+        "Do not give buy/sell advice — only assess the durability and trajectory of competitive advantage."
     ),
 }
 
@@ -189,9 +200,10 @@ async def _generate_consensus_async(
     score_summary = ", ".join(
         f"{s.investor}: {s.total_score:.0f}/100 ({s.verdict})"
         for s in investor_scores
+        if s.investor != "Moat Score"
     )
     prompt = (
-        f"Ten legendary investors evaluated {ticker} ({company_name}).\n"
+        f"Ten legendary investors (plus a moat analyst) evaluated {ticker} ({company_name}).\n"
         f"Their verdicts: {score_summary}\n"
         f"Consensus score: {weighted_avg:.0f}/100 ({agreement_level})\n\n"
         f"Write exactly one paragraph (3-4 sentences) summarising where the investors agree "

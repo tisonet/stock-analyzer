@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import type { ConsensusScore } from '../types/analysis'
+import { MOAT_INVESTOR_NAME } from '../types/analysis'
 import { analyzeStock } from '../api/client'
 import SearchBar from '../components/SearchBar'
 import ConsensusView from '../components/ConsensusView'
 import InvestorCard from '../components/InvestorCard'
+import MoatCard from '../components/MoatCard'
 import ScenarioTab from '../components/ScenarioTab'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
@@ -67,8 +69,8 @@ export default function Analysis() {
               Evaluate any stock like the legends
             </h2>
             <p className="text-gray-500 max-w-md mx-auto">
-              Enter a ticker symbol above to get a comprehensive analysis from Buffett, Munger,
-              Graham, Lynch, Dalio, Klarman, Terry Smith, Icahn, and AKO Quality.
+              Enter a ticker symbol above to get a comprehensive analysis from 10 legendary
+              investors plus a dedicated economic moat assessment.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto mt-8 text-left">
               {[
@@ -81,6 +83,8 @@ export default function Analysis() {
                 { icon: '🎯', name: 'Terry Smith', style: 'Quality compounder + ROCE' },
                 { icon: '⚔️', name: 'Carl Icahn', style: 'Activist + undervalued assets' },
                 { icon: '💎', name: 'AKO Quality', style: 'Virtuous circle + ROIC' },
+                { icon: '🔢', name: 'Dev Kantesaria', style: 'Compounding machines + ROIC' },
+                { icon: '🏰', name: 'Moat Score', style: '9-criteria moat analysis (0–10)' },
               ].map((inv) => (
                 <div
                   key={inv.name}
@@ -123,50 +127,61 @@ export default function Analysis() {
         )}
 
         {/* Success state */}
-        {state === 'success' && result && (
-          <div>
-            {/* Consensus */}
-            <ConsensusView consensus={result} />
+        {state === 'success' && result && (() => {
+          const moatScore = result.investor_scores.find(
+            (s) => s.investor === MOAT_INVESTOR_NAME
+          )
+          const investorScores = result.investor_scores.filter(
+            (s) => s.investor !== MOAT_INVESTOR_NAME
+          )
+          return (
+            <div>
+              {/* Consensus */}
+              <ConsensusView consensus={result} />
 
-            {/* Tabs */}
-            <div className="flex gap-1 mb-6">
-              <button
-                onClick={() => setActiveTab('investors')}
-                className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  activeTab === 'investors'
-                    ? 'bg-gray-700 text-gray-100'
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                Investor Breakdown
-              </button>
-              <button
-                onClick={() => setActiveTab('scenario')}
-                className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
-                  activeTab === 'scenario'
-                    ? 'bg-gray-700 text-gray-100'
-                    : 'text-gray-500 hover:text-gray-300'
-                }`}
-              >
-                Scenario Analysis
-              </button>
-            </div>
+              {/* Moat Score panel — analytical, below consensus */}
+              {moatScore && <MoatCard score={moatScore} />}
 
-            {/* Investor cards */}
-            {activeTab === 'investors' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {result.investor_scores.map((score) => (
-                  <InvestorCard key={score.investor} score={score} />
-                ))}
+              {/* Tabs */}
+              <div className="flex gap-1 mb-6">
+                <button
+                  onClick={() => setActiveTab('investors')}
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                    activeTab === 'investors'
+                      ? 'bg-gray-700 text-gray-100'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  Investor Breakdown
+                </button>
+                <button
+                  onClick={() => setActiveTab('scenario')}
+                  className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                    activeTab === 'scenario'
+                      ? 'bg-gray-700 text-gray-100'
+                      : 'text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  Scenario Analysis
+                </button>
               </div>
-            )}
 
-            {/* Scenario tab */}
-            {activeTab === 'scenario' && (
-              <ScenarioTab investor_scores={result.investor_scores} />
-            )}
-          </div>
-        )}
+              {/* Investor cards (moat excluded — shown separately above) */}
+              {activeTab === 'investors' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {investorScores.map((score) => (
+                    <InvestorCard key={score.investor} score={score} />
+                  ))}
+                </div>
+              )}
+
+              {/* Scenario tab */}
+              {activeTab === 'scenario' && (
+                <ScenarioTab investor_scores={investorScores} />
+              )}
+            </div>
+          )
+        })()}
       </main>
 
       <footer className="border-t border-gray-800 mt-16 py-6 text-center text-gray-600 text-xs">
