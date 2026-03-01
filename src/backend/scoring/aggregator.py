@@ -23,6 +23,7 @@ WEIGHTS: dict[str, float] = {
     "AKO Quality": 1.0,
     "Kantesaria": 1.0,
     "Moat Score": 0,    # analytical only — excluded from buy/sell consensus
+    "Red Flag Score": 0,  # analytical only — excluded from buy/sell consensus
 }
 
 

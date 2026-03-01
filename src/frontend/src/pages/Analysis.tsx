@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import type { ConsensusScore } from '../types/analysis'
-import { MOAT_INVESTOR_NAME } from '../types/analysis'
+import { MOAT_INVESTOR_NAME, ANTI_MOAT_INVESTOR_NAME } from '../types/analysis'
 import { analyzeStock } from '../api/client'
 import SearchBar from '../components/SearchBar'
 import ConsensusView from '../components/ConsensusView'
 import InvestorCard from '../components/InvestorCard'
 import MoatCard from '../components/MoatCard'
+import RedFlagCard from '../components/RedFlagCard'
 import ScenarioTab from '../components/ScenarioTab'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
@@ -70,7 +71,7 @@ export default function Analysis() {
             </h2>
             <p className="text-gray-500 max-w-md mx-auto">
               Enter a ticker symbol above to get a comprehensive analysis from 10 legendary
-              investors plus a dedicated economic moat assessment.
+              investors plus a dedicated economic moat assessment and red flag detector.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto mt-8 text-left">
               {[
@@ -85,6 +86,7 @@ export default function Analysis() {
                 { icon: '💎', name: 'AKO Quality', style: 'Virtuous circle + ROIC' },
                 { icon: '🔢', name: 'Dev Kantesaria', style: 'Compounding machines + ROIC' },
                 { icon: '🏰', name: 'Moat Score', style: '9-criteria moat analysis (0–10)' },
+                { icon: '🚨', name: 'Red Flag Score', style: '12 forensic distress metrics' },
               ].map((inv) => (
                 <div
                   key={inv.name}
@@ -131,8 +133,11 @@ export default function Analysis() {
           const moatScore = result.investor_scores.find(
             (s) => s.investor === MOAT_INVESTOR_NAME
           )
+          const redFlagScore = result.investor_scores.find(
+            (s) => s.investor === ANTI_MOAT_INVESTOR_NAME
+          )
           const investorScores = result.investor_scores.filter(
-            (s) => s.investor !== MOAT_INVESTOR_NAME
+            (s) => s.investor !== MOAT_INVESTOR_NAME && s.investor !== ANTI_MOAT_INVESTOR_NAME
           )
           return (
             <div>
@@ -141,6 +146,9 @@ export default function Analysis() {
 
               {/* Moat Score panel — analytical, below consensus */}
               {moatScore && <MoatCard score={moatScore} />}
+
+              {/* Red Flag Score panel — analytical, mirrors moat */}
+              {redFlagScore && <RedFlagCard score={redFlagScore} />}
 
               {/* Tabs */}
               <div className="flex gap-1 mb-6">

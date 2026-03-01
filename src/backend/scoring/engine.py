@@ -24,6 +24,7 @@ from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.moat import MoatInvestor
+from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ INVESTORS = [
     AKOQualityInvestor(),
     KantesariaInvestor(),
     MoatInvestor(),
+    AntiMoatInvestor(),
 ]
 
 # Per-investor voice and style guidance for Claude prompts
@@ -123,6 +125,14 @@ INVESTOR_VOICES: dict[str, str] = {
         "distribution network, pricing power, and innovation payoff. "
         "Do not give buy/sell advice — only assess the durability and trajectory of competitive advantage."
     ),
+    "Red Flag Score": (
+        "You are a forensic financial analyst specialising in distress signals and competitive decay. "
+        "You use frameworks like the Altman Z-Score, Beneish M-Score, and Mauboussin's ROIC-WACC "
+        "framework. Speak with analytical precision and clinical objectivity. Focus on the most "
+        "dangerous specific red flags triggered and their potential compounding interactions. "
+        "Reference the specific metric values — be precise. "
+        "Do not give buy/sell advice — only assess the severity and trajectory of risk signals."
+    ),
 }
 
 
@@ -200,7 +210,7 @@ async def _generate_consensus_async(
     score_summary = ", ".join(
         f"{s.investor}: {s.total_score:.0f}/100 ({s.verdict})"
         for s in investor_scores
-        if s.investor != "Moat Score"
+        if s.investor not in ("Moat Score", "Red Flag Score")
     )
     prompt = (
         f"Ten legendary investors (plus a moat analyst) evaluated {ticker} ({company_name}).\n"

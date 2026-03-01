@@ -6,6 +6,12 @@ export const MOAT_INVESTOR_NAME = 'Moat Score' as const
 /** Verdict labels returned by MoatInvestor (maps to 75/55/40 score thresholds). */
 export type MoatStrengthLabel = 'Wide Moat' | 'Narrow Moat' | 'Weak Moat' | 'No Moat'
 
+/** Constant used to identify and separate the red flag score from investor scores. */
+export const ANTI_MOAT_INVESTOR_NAME = 'Red Flag Score' as const
+
+/** Danger severity labels returned by AntiMoatInvestor (higher score = safer company). */
+export type DangerLabel = 'Clean' | 'Watch' | 'Caution' | 'Danger' | 'Critical'
+
 export interface Rule {
   name: string
   passed: boolean
