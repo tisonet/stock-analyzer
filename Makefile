@@ -1,4 +1,4 @@
-.PHONY: install install-backend install-frontend backend frontend test dev
+.PHONY: install install-backend install-frontend backend frontend test dev cache-clear cache-list
 
 install: install-backend install-frontend
 
@@ -19,3 +19,12 @@ test:
 
 dev:
 	make -j2 backend frontend
+
+# Clear cache for a specific ticker:  make cache-clear TICKER=AAPL
+# Clear entire cache:                  make cache-clear
+TICKER ?=
+cache-clear:
+	python3 scripts/cache_clear.py "$(TICKER)"
+
+cache-list:
+	python3 scripts/cache_list.py

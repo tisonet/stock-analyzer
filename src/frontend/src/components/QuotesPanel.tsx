@@ -57,6 +57,12 @@ const QUOTES: Record<string, InvestorQuotes> = {
     'Hold': 'The quality characteristics are present, but one or more pillars need more consistency. Quality companies are worth waiting for — patience is part of the process.',
     'Avoid': 'The three pillars must all hold — strong cash generation, sustained high ROIC, and attractive reinvestment. One or two is not enough. We will wait for a genuine quality compounder.',
   },
+  'Kantesaria': {
+    'Strong Buy': 'This is the compounding machine I look for — 20%+ ROIC every year, capital-light, recurring revenue, wide moat. The multiple looks high until you model ten years of compounding at these rates. Then it looks cheap.',
+    'Buy': 'A genuine compounder at a fair price. ROIC above 20%, predictable cash flows, and a clear moat. I am comfortable holding this for a decade and letting the compounding do the work.',
+    'Hold': 'The business quality is real, but one or two metrics need more runway before I build a full position. Compounders reward patience — I would rather wait for confirmation than overpay for potential.',
+    'Avoid': 'Without high and stable ROIC, the compounding thesis collapses. A premium multiple on a mediocre business is the most dangerous trade in investing — the multiple compresses as growth slows, and the damage is permanent.',
+  },
 }
 
 interface QuotesPanelProps {
