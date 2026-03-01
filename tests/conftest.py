@@ -421,3 +421,20 @@ def non_icahn_target_data() -> FinancialData:
         cash_flow=cashflow,
         history=history,
     )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Empty data (crash-safety tests)
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.fixture
+def empty_data() -> FinancialData:
+    """Minimal fixture with empty DataFrames — used to verify crash safety."""
+    return FinancialData(
+        ticker="EMPTY",
+        info={},
+        income_stmt=pd.DataFrame(),
+        balance_sheet=pd.DataFrame(),
+        cash_flow=pd.DataFrame(),
+        history=pd.DataFrame(),
+    )

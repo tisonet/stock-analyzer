@@ -61,20 +61,22 @@ def test_consensus_mixed():
     assert consensus.agreement_level in ("Mixed", "High Conviction")
 
 
-def test_dalio_weight_lower():
-    """Dalio has 0.8 weight; verify weighted avg is not simple mean."""
+def test_dalio_weight_zero():
+    """Dalio has weight=0 (excluded from consensus, macro-focused).
+    A Dalio score of 0 must not drag down the consensus avg.
+    """
     scores = [
         _make_score("Buffett", 100),
         _make_score("Munger", 100),
         _make_score("Graham", 100),
         _make_score("Lynch", 100),
-        _make_score("Dalio", 0),     # Dalio scores 0
+        _make_score("Dalio", 0),     # weight=0 → excluded from consensus
         _make_score("Klarman", 100),
     ]
     consensus = build_consensus("TEST", scores)
-    # Weighted: (5 × 100 + 0.8 × 0) / 5.8 = 500/5.8 ≈ 86.2
-    expected = 500 / 5.8
-    assert abs(consensus.weighted_avg - expected) < 0.5
+    # Dalio excluded (weight=0): weighted_avg = 500 / 5.0 = 100.0
+    assert WEIGHTS["Dalio"] == 0, "Dalio weight must be 0 (excluded from buy/sell consensus)"
+    assert abs(consensus.weighted_avg - 100.0) < 0.5
 
 
 def test_consensus_empty():
