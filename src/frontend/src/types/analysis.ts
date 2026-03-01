@@ -15,6 +15,7 @@ export interface Rule {
   points_possible: number
   description: string
   source: string
+  explanation: string   // plain-language: what this metric measures and why it matters
 }
 
 export interface InvestorScore {

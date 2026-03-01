@@ -63,6 +63,7 @@ class LynchInvestor(BaseInvestor):
             ),
             source="One Up on Wall Street, Lynch Ch.13",
             passed=peg < 1.0 if peg is not None else None,
+            explanation="The PEG Ratio divides the P/E multiple by the annual EPS growth rate. A PEG below 1.0 means the valuation is cheaper than the growth rate justifies — Lynch's key indicator that you are not overpaying for a growth company's future earnings.",
         )
         rules.append(r1)
         if peg is not None and peg > 2.5:
@@ -80,6 +81,7 @@ class LynchInvestor(BaseInvestor):
             points_possible=20.0,
             description=f"Classified as '{category}' based on EPS growth rate",
             source="One Up on Wall Street, Lynch Ch.3 — Six Categories",
+            explanation="Lynch classified companies into 6 types: Fast Growers (20%+ EPS growth), Stalwarts (10-20%), Slow Growers, Cyclicals, Turnarounds, and Asset Plays. Fast Growers and Stalwarts are his preferred types for long-term compounding.",
         )
         rules.append(r2)
 
@@ -100,6 +102,7 @@ class LynchInvestor(BaseInvestor):
             description=insider_desc,
             source="One Up on Wall Street, Lynch",
             passed=insider_pass,
+            explanation="Management ownership above 1% signals that those with the deepest knowledge of the business have skin in the game. For Lynch, insiders buying their own stock is the clearest positive signal — they believe the company is undervalued.",
         )
         rules.append(r3)
 
@@ -116,6 +119,7 @@ class LynchInvestor(BaseInvestor):
             description=f"Sector: {sector} — {'consumer-facing' if is_consumer else 'institutional/B2B'}",
             source="One Up on Wall Street, Lynch — Buy what you know",
             passed=is_consumer,
+            explanation="Lynch preferred businesses whose products he could observe and understand in daily life. Consumer-facing companies (retail, food, healthcare, media) allow investors to assess competitive dynamics firsthand, reducing reliance on abstract financial models.",
         )
         rules.append(r4)
 
@@ -144,6 +148,7 @@ class LynchInvestor(BaseInvestor):
             description=growth_desc,
             source="One Up on Wall Street, Lynch Ch.13",
             passed=growth_consistent,
+            explanation="Lynch checked for years where EPS dropped more than 30% — 'earnings disasters' that destroy investor confidence and often signal deeper problems. A clean EPS history with no disasters confirms stable, predictable profitability.",
         )
         rules.append(r5)
         if growth_consistent is False:
@@ -177,6 +182,7 @@ class LynchInvestor(BaseInvestor):
             description=inv_desc,
             source="One Up on Wall Street, Lynch — inventory warning signs",
             passed=inv_score == 1.0 if inv_score is not None else None,
+            explanation="Inventory turnover (Revenue ÷ Inventory) measures how quickly a company converts stock into sales. For manufacturing and retail companies, slow turnover (below 4x) may signal weak demand, pricing problems, or excess production — early warning signs of trouble.",
         )
         rules.append(r6)
         if is_inventory_sector and inv_score == 0.0:

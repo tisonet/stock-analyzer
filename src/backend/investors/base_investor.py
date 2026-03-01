@@ -24,6 +24,7 @@ class Rule:
     points_possible: float
     description: str
     source: str                  # book/quote/letter reference
+    explanation: str = ""        # plain-language: what this metric measures and why it matters
 
 
 @dataclass
@@ -78,6 +79,7 @@ def _rule_to_dict(r: Rule) -> dict:
         "points_possible": r.points_possible,
         "description": r.description,
         "source": r.source,
+        "explanation": r.explanation,
     }
 
 
@@ -128,6 +130,7 @@ class BaseInvestor(ABC):
         source: str,
         passed: Optional[bool] = None,
         partial: float = 1.0,     # fraction of points if passed
+        explanation: str = "",    # plain-language metric explanation shown in UI
     ) -> Rule:
         """
         Build a Rule. If value is None → unavailable (failed, 0 pts).
@@ -144,6 +147,7 @@ class BaseInvestor(ABC):
                 points_possible=points_possible,
                 description="Data unavailable",
                 source=source,
+                explanation=explanation,
             )
         if passed is None:
             passed = value >= threshold
@@ -157,6 +161,7 @@ class BaseInvestor(ABC):
             points_possible=points_possible,
             description=description,
             source=source,
+            explanation=explanation,
         )
 
     def _build_result(self, rules: list[Rule], red_flags: list[str]) -> InvestorScore:

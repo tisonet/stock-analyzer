@@ -88,6 +88,7 @@ class KantesariaInvestor(BaseInvestor):
                 "of long-run equity returns; I need 20%+ consistently, every year'"
             ),
             passed=roic_consistent,
+            explanation="Kantesaria's non-negotiable primary screen: ROIC must exceed 20% — more than double the typical cost of capital (~9-10%) — and must be positive every single year. The sustained gap between ROIC and cost of capital is the entire source of long-run value creation; cyclical businesses that occasionally hit 20% do not compound.",
         )
         rules.append(r1)
         if not r1.passed and roic_series and any(r < 0 for r in roic_series):
@@ -165,6 +166,7 @@ class KantesariaInvestor(BaseInvestor):
             description=r2_desc,
             source=r2_source,
             passed=r2_passed,
+            explanation="Gross margin is Kantesaria's primary moat indicator. Network effects, switching costs, and regulatory barriers all manifest as structurally high gross margins — customers pay a durable premium because they cannot or will not switch. His portfolio archetypes (MSCI ~85%, FICO ~75%) sit far above 50%.",
         )
         rules.append(r2)
         if not r2.passed and gm_avg is not None and gm_avg < 0.30:
@@ -211,6 +213,7 @@ class KantesariaInvestor(BaseInvestor):
                 "sustainable; MSCI and FICO spend <2% of revenue on capex'"
             ),
             passed=capital_light,
+            explanation="Capital-light models are the mechanical engine of compounding. Businesses spending less than 5% of revenue on CapEx (like MSCI and FICO) can grow without returning to shareholders for new capital. High-CapEx businesses consume the free cash flow that should be redeployed at 20%+ rates.",
         )
         rules.append(r3)
         if not r3.passed and capex_intensity is not None and capex_intensity > 0.15:
@@ -257,6 +260,7 @@ class KantesariaInvestor(BaseInvestor):
                 "25-40% FCF margins as the combined output of moat + asset-light model"
             ),
             passed=fcf_ok,
+            explanation="FCF margin (Free Cash Flow ÷ Revenue) is the combined output of moat and capital-light model working together. It measures how many cents of investable cash are generated per dollar of revenue. Kantesaria's portfolio companies convert 25-40% of revenue into free cash — the prerequisite for the compounding flywheel.",
         )
         rules.append(r4)
         if not r4.passed and fcf_margin_avg is not None and fcf_margin_avg < 0.05:
@@ -299,6 +303,7 @@ class KantesariaInvestor(BaseInvestor):
                 "reinvestment runway; without growth, you have a value stock, not a compounder'"
             ),
             passed=cagr_ok,
+            explanation="High ROIC alone is insufficient for compounding. Without revenue growth, a high-ROIC business quickly exhausts its reinvestment opportunities and becomes a dividend-paying cash cow, not a compounder. Above 8% revenue CAGR provides the runway to redeploy capital at high rates for a decade or more.",
         )
         rules.append(r5)
         if not r5.passed and rev_cagr is not None and rev_cagr < 0:
@@ -346,6 +351,7 @@ class KantesariaInvestor(BaseInvestor):
                 "MSCI and Verisk grow at low-variance rates because revenue is contracted'"
             ),
             passed=predictable,
+            explanation="Kantesaria specifically targets subscription-like, recurring, or contractually embedded revenue (index licensing fees, score usage royalties, data subscriptions). Low variance (stdev below 10%) in annual growth rates is the quantitative fingerprint of this model — revenue compounds reliably through all economic conditions.",
         )
         rules.append(r6)
         if not r6.passed and growth_stdev is not None and growth_stdev > 0.20:

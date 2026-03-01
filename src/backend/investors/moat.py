@@ -155,6 +155,7 @@ class MoatInvestor(BaseInvestor):
                 "Dorsey, 'The Little Book That Builds Wealth' (2008)"
             ),
             passed=r1_passed,
+            explanation="Revenue CAGR above 8% with low growth variance distinguishes durable market leaders from cyclical beneficiaries. Consistent market-share gainers show above-average revenue growth with low volatility — as opposed to businesses that spike during booms and shrink in downturns.",
         )
         rules.append(r1)
         if rev_cagr is not None and rev_cagr < 0:
@@ -207,6 +208,7 @@ class MoatInvestor(BaseInvestor):
                 "Mauboussin, 'Measuring the Moat' (Credit Suisse, 2013)"
             ),
             passed=r2_passed,
+            explanation="High, stable gross margins are the financial fingerprint of network effects and switching costs. When customers are locked into a product ecosystem, they cannot easily defect, allowing premium pricing. The threshold is sector-calibrated to account for different industry cost structures.",
         )
         rules.append(r2)
         if gm_avg is not None and gm_avg < 0.20:
@@ -282,6 +284,7 @@ class MoatInvestor(BaseInvestor):
             description=r3_desc,
             source=r3_source,
             passed=r3_passed,
+            explanation="R&D investment at or above the sector-minimum threshold, combined with ROIC above 12%, proves IP spending generates real economic returns. If R&D data is unavailable, ROIC above 15% serves as a proxy — sustained high returns imply proprietary advantages that competitors cannot easily replicate.",
         )
         rules.append(r3)
 
@@ -315,6 +318,7 @@ class MoatInvestor(BaseInvestor):
                 "GuruFocus Moat Score — Criterion 4: Strong Brand Strength & Deep Customer Loyalty; "
                 "Dorsey, 'The Little Book That Builds Wealth' (2008)"
             ),
+            explanation="A strong brand enables consistently above-average Return on Equity by commanding premium pricing. ROE above 15% over a 3-year average confirms that brand loyalty translates into sustained financial returns that exceed the cost of equity capital.",
         )
         rules.append(r4)
         if roe_avg is not None and roe_avg < 0:
@@ -389,6 +393,7 @@ class MoatInvestor(BaseInvestor):
                 "(economies of scale, proprietary technology)"
             ),
             passed=r5_passed,
+            explanation="Operating margin expansion (revenue growing faster than costs) combined with low CapEx intensity (below 10% of revenue) confirms durable cost advantages and operating leverage. The trend direction reveals whether cost advantages are compounding (strengthening) or being eroded by competition (weakening).",
         )
         rules.append(r5)
         if op_expansion is not None and op_expansion < -0.03:
@@ -452,6 +457,7 @@ class MoatInvestor(BaseInvestor):
             description=r6_desc,
             source="GuruFocus Moat Score — Criterion 6: Significant Regulatory Barriers & Exclusive Licenses",
             passed=r6_passed,
+            explanation="Structural entry barriers from regulation (licensing, compliance requirements, rate regulation) provide built-in protection from new competitors. For unregulated sectors, very stable operating margins (stdev ≤ 5pp) imply contractual or sticky pricing that functions as a softer barrier.",
         )
         rules.append(r6)
 
@@ -493,6 +499,7 @@ class MoatInvestor(BaseInvestor):
             description=r7_desc,
             source="GuruFocus Moat Score — Criterion 7: Superior Distribution Network",
             passed=r7_passed,
+            explanation="Asset turnover (Revenue ÷ Total Assets) measures how efficiently the distribution infrastructure generates revenue. Above 0.7x combined with FCF margin above 10% confirms the distribution system generates genuine economic value rather than just physical capacity that sits underutilised.",
         )
         rules.append(r7)
 
@@ -556,6 +563,7 @@ class MoatInvestor(BaseInvestor):
                 "Buffett, Berkshire letters: 'pricing power is the single most important factor'"
             ),
             passed=r8_passed,
+            explanation="The gross margin trend — comparing the first half to the second half of available history — directly measures whether the company can raise prices faster than costs rise. Stable or expanding margins confirm pricing power is intact; contracting margins signal the moat is being eroded by competition.",
         )
         rules.append(r8)
         if gm_delta is not None and gm_delta < -0.03:
@@ -611,6 +619,7 @@ class MoatInvestor(BaseInvestor):
                 "GuruFocus Moat Score — Criterion 9: Consistent & Impactful Innovation & R&D"
             ),
             passed=r9_passed,
+            explanation="When EPS grows faster than revenue (EPS CAGR > Revenue CAGR), R&D investment is improving profitability — each dollar of revenue is becoming more profitable. This confirms innovation is creating genuine economic value, not just adding cost while growing the top line.",
         )
         rules.append(r9)
 

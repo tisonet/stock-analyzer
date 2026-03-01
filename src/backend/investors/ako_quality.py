@@ -76,6 +76,7 @@ class AKOQualityInvestor(BaseInvestor):
             ),
             source="Cunningham et al. (2016) — 'consistency matters more than the average'",
             passed=roic_consistent,
+            explanation="ROIC consistency is AKO's primary quality screen. Every year must be positive: a company earning 40% in good years but destroying capital in bad years is a cyclical business in disguise. The compounding flywheel only works if returns are stable through all conditions.",
         )
         rules.append(r1)
         if not r1.passed and roic_series and any(r < 0 for r in roic_series):
@@ -104,6 +105,7 @@ class AKOQualityInvestor(BaseInvestor):
             ),
             source="Cunningham et al. (2016) — 'gross margin is the purest expression of "
                    "customer valuation'",
+            explanation="AKO describes gross margin as 'the purest expression of customer valuation of a product.' When customers consistently pay a large premium over variable production costs, it proves genuine product differentiation. AKO's pattern companies (Hermès, Novo Nordisk, KONE) sustain high gross margins across cycles.",
         )
         rules.append(r2)
         if not r2.passed and gm_avg is not None and gm_avg < 0.20:
@@ -144,6 +146,7 @@ class AKOQualityInvestor(BaseInvestor):
             ),
             source="Cunningham et al. (2016) — prefer CROCI over accounting ROIC; "
                    "cash conversion validates earnings quality",
+            explanation="AKO prefers CROCI (Cash Return on Capital Invested) over accounting ROIC because reported earnings can be manipulated. FCF as a % of Net Income above 80% confirms the company is collecting actual cash, not just recording receivables or deferrals — the earnings are real and repeatable.",
         )
         rules.append(r3)
         if not r3.passed and fcf_conversion is not None and fcf_conversion < 50:
@@ -180,6 +183,7 @@ class AKOQualityInvestor(BaseInvestor):
             ),
             source="Cunningham et al. (2016) — Building Block 3: multiple concurrent growth engines",
             passed=growth_consistent if total_years > 0 else None,
+            explanation="AKO's 'Multiple Sources of Growth' framework requires concurrent growth drivers: market share gains, geographic expansion, pricing power, and underlying market growth. Consistent annual revenue growth across most years is the simplest proxy for this multi-engine growth model.",
         )
         rules.append(r4)
 
@@ -210,6 +214,7 @@ class AKOQualityInvestor(BaseInvestor):
             ),
             source="Cunningham et al. (2016) — quality pattern companies sustain high "
                    "operating margins across economic cycles",
+            explanation="High operating margins (above 15%) signal that the company has scale advantages and cost efficiency that smaller competitors cannot match. AKO's pattern companies maintain high operating margins throughout economic cycles — proving the advantage is structural rather than a cyclical tailwind.",
         )
         rules.append(r5)
         if not r5.passed and op_margin_avg is not None and op_margin_avg < 0:
@@ -239,6 +244,7 @@ class AKOQualityInvestor(BaseInvestor):
             source="Cunningham et al. (2016) — 'avoid financial debt combined with "
                    "operational leverage; quality companies need no leverage'",
             passed=de_ratio < 1.0 if de_ratio is not None else None,
+            explanation="AKO warns explicitly about 'substantial financial debt combined with operational leverage.' Quality compounders should generate returns without needing debt — their model produces the capital required for reinvestment internally. Leverage adds fragility that can break the virtuous compounding circle in downturns.",
         )
         rules.append(r6)
         if not r6.passed and de_ratio is not None and de_ratio > 2.0:

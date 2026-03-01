@@ -92,8 +92,18 @@ function RuleItem({ rule }: { rule: Rule }) {
             )}
           </div>
 
-          {/* Description */}
-          <p className="text-gray-300 leading-relaxed">{rule.description}</p>
+          {/* Explanation — plain-language metric definition */}
+          {rule.explanation && (
+            <div className="bg-gray-800/60 rounded-md px-3 py-2 border border-gray-700/50">
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">
+                What this measures
+              </p>
+              <p className="text-gray-300 text-xs leading-relaxed">{rule.explanation}</p>
+            </div>
+          )}
+
+          {/* Computed result */}
+          <p className="text-gray-400 text-xs leading-relaxed">{rule.description}</p>
 
           {/* Source */}
           <p className="text-gray-500 text-xs italic">📚 {rule.source}</p>

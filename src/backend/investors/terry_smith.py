@@ -56,6 +56,7 @@ class TerrySmithInvestor(BaseInvestor):
                 if roic_avg is not None else "No ROCE data available"
             ),
             source="Fundsmith Annual Letters; 'Investing for Growth' (2020)",
+            explanation="Return on Capital Employed (ROCE) measures operating profit relative to total capital used. Sustained ROCE above 15% every year proves the business consistently earns well above its cost of capital — the prerequisite for the quality compounders Terry Smith seeks.",
         )
         rules.append(r1)
         if r1.passed and roic_avg is not None and roic_avg < 0.20:
@@ -82,6 +83,7 @@ class TerrySmithInvestor(BaseInvestor):
                 if gm_avg is not None else "Gross margin data unavailable"
             ),
             source="Fundsmith Annual Letters — pricing power filter",
+            explanation="Gross margin (revenue minus cost of goods sold, as a % of revenue) is the most direct measure of pricing power. Above 40% means customers pay a substantial premium over variable costs — evidence of genuine competitive differentiation that a commoditised business cannot achieve.",
         )
         rules.append(r2)
         if not r2.passed:
@@ -118,6 +120,7 @@ class TerrySmithInvestor(BaseInvestor):
                 if conversion_avg is not None else "Cash conversion data unavailable"
             ),
             source="Fundsmith Investor Day 2018 — 'profits must be real'",
+            explanation="Cash conversion measures whether reported profits convert into actual cash. If operating cash flow is less than 80% of operating income, earnings may be inflated by accruals or aggressive accounting. High conversion confirms profits are real and collectible.",
         )
         rules.append(r3)
         if not r3.passed and conversion_avg is not None and conversion_avg < 0.60:
@@ -158,6 +161,7 @@ class TerrySmithInvestor(BaseInvestor):
                 else "Insufficient revenue history"
             ),
             source="Fundsmith Annual Letters — organic growth filter",
+            explanation="Terry Smith values consistency over speed. Revenue growing in at least 4 of 5 years proves the business has reliable organic demand — not a one-time beneficiary of a favourable cycle. Consistency is what allows compounding to work reliably over a 10-20 year hold.",
         )
         rules.append(r4)
         if not r4.passed and rev_series and rev_series[-1] < rev_series[0]:
@@ -191,6 +195,7 @@ class TerrySmithInvestor(BaseInvestor):
             ),
             source="Fundsmith — asset-light business model requirement",
             passed=capex_intensity_avg < 0.05 if capex_intensity_avg is not None else None,
+            explanation="Capital intensity measures how much of revenue must be reinvested in physical assets. Businesses spending less than 5% on CapEx (software, brands, processes) convert most revenue into free cash. High CapEx businesses (factories, infrastructure) consume the cash that would otherwise compound.",
         )
         rules.append(r5)
         if not r5.passed and capex_intensity_avg is not None and capex_intensity_avg > 0.10:
@@ -220,6 +225,7 @@ class TerrySmithInvestor(BaseInvestor):
                 if fcf_yield is not None else "FCF yield unavailable"
             ),
             source="Fundsmith — 'don't overpay' pillar",
+            explanation="Free Cash Flow Yield (latest FCF ÷ Market Cap) is Terry Smith's valuation check. He isn't a deep-value investor but requires at least 2% FCF yield to ensure the quality premium is not absurdly extreme. Below 1% means you are paying 100x+ FCF — almost no room for error.",
         )
         rules.append(r6)
         if not r6.passed and fcf_yield is not None and fcf_yield < 1.0:

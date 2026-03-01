@@ -52,6 +52,7 @@ class KlarmanInvestor(BaseInvestor):
             points_possible=30.0,
             description=mos_desc,
             source="Margin of Safety, Klarman Ch.1 — The margin of safety concept",
+            explanation="Klarman's core concept: the gap between purchase price and intrinsic value is your cushion against being wrong. Unlike Buffett's 30% bar, Klarman demands 50% — he only buys when the stock is at half price or less versus a conservative DCF estimate, ensuring extreme protection against forecasting errors.",
         ))
         if mos is not None and mos < 0:
             red_flags.append(
@@ -88,6 +89,7 @@ class KlarmanInvestor(BaseInvestor):
             ),
             source="Margin of Safety, Klarman — Net asset value analysis",
             passed=ncav_pass,
+            explanation="Net Current Asset Value (NCAV) = Current Assets minus All Liabilities. If market cap is less than 1.5× NCAV, you are buying the liquid assets at a discount even before assigning any value to the ongoing business — Graham's famous 'net-net' screen that Klarman also employs.",
         )
         rules.append(r2)
 
@@ -110,6 +112,7 @@ class KlarmanInvestor(BaseInvestor):
             points_possible=25.0,
             description=liq_desc,
             source="Margin of Safety, Klarman — Asset-based valuation",
+            explanation="Liquidation value estimates what investors would recover if the business were wound down: cash at full value, receivables at 75¢, inventory at 50¢, minus all liabilities. Buying below liquidation value means you pay less than physical asset value — the ultimate downside protection floor.",
         ))
         if liq_ratio is not None and liq_ratio < 0.20:
             red_flags.append(
@@ -140,6 +143,7 @@ class KlarmanInvestor(BaseInvestor):
                 else "Price history unavailable"
             ),
             source="Margin of Safety, Klarman — Capital preservation",
+            explanation="Klarman's capital preservation philosophy: never lose money before thinking about gains. The 10-year maximum drawdown measures the worst historical price decline. Stocks with drawdowns below 30% have demonstrated resilience that Klarman requires before evaluating upside potential.",
         ))
         if dd_pct is not None and dd_pct > 60:
             red_flags.append(
@@ -164,6 +168,7 @@ class KlarmanInvestor(BaseInvestor):
             ),
             source="Margin of Safety, Klarman — Against momentum investing",
             passed=not momentum_driven if ret_12m is not None else None,
+            explanation="Stocks up 50%+ in 12 months are typically driven by momentum rather than fundamental value. Klarman explicitly avoids these: the market has already priced in good news, dramatically shrinking the margin of safety. He waits for value to emerge, not chase recent winners.",
         )
         rules.append(r5)
         if momentum_driven:

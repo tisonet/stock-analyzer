@@ -66,6 +66,7 @@ class IcahnInvestor(BaseInvestor):
             ),
             source="Icahn 13D filings — 'I look for good assets at a cheap price'",
             passed=pb < 1.5 if pb is not None else None,
+            explanation="Price-to-Book ratio compares market cap to net asset value. Below 1.5x means buying the company's assets for less than their stated book value — providing Icahn a floor value even if his activist campaign fails to unlock value. He needs this discount to justify the campaign risk.",
         )
         rules.append(r1)
         if not r1.passed and pb is not None and pb > 3.0:
@@ -94,6 +95,7 @@ class IcahnInvestor(BaseInvestor):
                 if fcf_yield is not None else "FCF yield unavailable"
             ),
             source="Icahn CNBC interviews — FCF is the fuel for buybacks and special dividends",
+            explanation="Free Cash Flow Yield above 5% proves the underlying business generates real cash. Once Icahn gains board influence, this cash becomes his 'ammunition' for forcing buybacks, special dividends, or debt reduction — returning value to shareholders that undisciplined management was hoarding or wasting.",
         )
         rules.append(r2)
         if not r2.passed and fcf_latest is not None and fcf_latest < 0:
@@ -121,6 +123,7 @@ class IcahnInvestor(BaseInvestor):
             ),
             source="Icahn — 'no excuse not to buy back stock' when balance sheet is clean",
             passed=de_ratio < 1.0 if de_ratio is not None else None,
+            explanation="A clean balance sheet with D/E below 1.0 removes management's best excuse for not returning capital. Icahn explicitly looks for companies with 'no excuse not to buy back stock.' High existing debt forecloses this option, weakening his leverage over the board.",
         )
         rules.append(r3)
         if not r3.passed and de_ratio is not None and de_ratio > 2.0:
@@ -148,6 +151,7 @@ class IcahnInvestor(BaseInvestor):
             ),
             source="Icahn — low insider ownership = governance gap = winnable proxy fight",
             passed=insider_pct < 0.10 if insider_pct is not None else None,
+            explanation="Low insider ownership (below 10%) means management's personal wealth is not tied to the stock price. For Icahn this is an opportunity — management won't vote against him using their own money, making a proxy fight more winnable and governance change more achievable.",
         )
         rules.append(r4)
         if not r4.passed and insider_pct is not None and insider_pct > 0.30:
@@ -173,6 +177,7 @@ class IcahnInvestor(BaseInvestor):
             ),
             source="Icahn — prefers EV/EBITDA 6–8x; acquirers will not overpay beyond that",
             passed=(ev_ebitda is not None and 0 < ev_ebitda < 8.0),
+            explanation="Enterprise Value / EBITDA measures the total cost to acquire the business (market cap + debt - cash) divided by operating earnings. Icahn targets below 8x — the range where strategic acquirers can still pay a meaningful takeover premium and generate returns, making a sale or break-up viable.",
         )
         rules.append(r5)
         if not r5.passed and ev_ebitda is not None and ev_ebitda > 15.0:
@@ -204,6 +209,7 @@ class IcahnInvestor(BaseInvestor):
             ),
             source="Icahn — 'good assets, badly managed' is the activist formula",
             passed=roe_opportunity,
+            explanation="Icahn's activist sweet spot: positive but mediocre Return on Equity. Loss-making companies are value traps; already-excellent ones have no governance gap to exploit. ROE of 0-15% is evidence that management is leaving returns on the table — the exact problem an activist campaign is designed to fix.",
         )
         rules.append(r6)
         if roe is not None and roe < 0:

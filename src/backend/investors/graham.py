@@ -57,6 +57,7 @@ class GrahamInvestor(BaseInvestor):
             ),
             source="The Intelligent Investor, Ch.14, Graham",
             passed=pe_pb_pass,
+            explanation="Price-to-Earnings (P/E) measures how many years of current earnings you pay for the stock. Price-to-Book (P/B) compares market price to net asset value. Graham's combined test (P/E×P/B < 22.5) ensures the stock is statistically cheap on both earnings and assets simultaneously.",
         )
         rules.append(r1)
         if pe is not None and pe > 25:
@@ -76,6 +77,7 @@ class GrahamInvestor(BaseInvestor):
                 else "Current ratio unavailable"
             ),
             source="Security Analysis, Graham & Dodd, Ch.43",
+            explanation="The Current Ratio divides current assets (cash, receivables, inventory) by current liabilities (short-term debt, payables). A ratio above 2 means the company has twice the assets needed to cover near-term obligations — a conservative liquidity cushion against unexpected setbacks.",
         )
         rules.append(r2)
         if cr is not None and cr < 1.0:
@@ -105,6 +107,7 @@ class GrahamInvestor(BaseInvestor):
             ),
             source="The Intelligent Investor, Ch.14, Graham",
             passed=debt_lt_nca,
+            explanation="Net Current Assets (current assets minus all liabilities) represent the floor value in a liquidation scenario. When total debt is less than this floor, the current assets alone could repay all obligations — Graham's most conservative balance sheet test.",
         )
         rules.append(r3)
         if debt_lt_nca is False and nca is not None and nca < 0:
@@ -139,6 +142,7 @@ class GrahamInvestor(BaseInvestor):
             ),
             source="The Intelligent Investor, Ch.14, Graham",
             passed=div_history_years >= 20 if div_history_years is not None else None,
+            explanation="Decades of uninterrupted dividends are evidence of earnings stability through multiple recessions and crises. Only businesses with consistently profitable operations can sustain dividends without interruption — Graham treated this as a strong signal of long-run durability.",
         )
         rules.append(r4)
         if not has_div:
@@ -159,6 +163,7 @@ class GrahamInvestor(BaseInvestor):
                 else "EPS history insufficient"
             ),
             source="The Intelligent Investor, Ch.14, Graham",
+            explanation="Graham's minimum earnings growth requirement: EPS must grow by at least one-third over a decade. This modest bar filters out businesses in terminal earnings decline while not requiring exceptional growth — just demonstrated ability to compound earnings over time.",
         )
         rules.append(r5)
         if eps_growth is not None and eps_growth < 0:
@@ -188,6 +193,7 @@ class GrahamInvestor(BaseInvestor):
                 else "Graham Number unavailable (negative EPS or BV)"
             ),
             source="The Intelligent Investor, Ch.20 — Margin of Safety",
+            explanation="The Graham Number = √(22.5 × EPS × Book Value per Share) combines earnings and asset-based valuation into a single fair-value estimate. A 33% margin of safety means buying at 67 cents on the dollar of this estimate, protecting against forecast errors and adverse surprises.",
         )
         rules.append(r6)
         if margin_of_safety is not None and margin_of_safety < -0.5:

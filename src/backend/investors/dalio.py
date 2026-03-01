@@ -54,6 +54,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=20.0,
             description=lev_desc,
             source="Principles for Navigating Big Debt Crises, Dalio",
+            explanation="Dalio evaluates debt levels relative to sector norms, not a universal threshold. Financial companies naturally operate with more leverage than tech companies. D/E is scored against an industry-specific tolerance to determine whether borrowing is conservative, elevated, or excessive for the sector.",
         ))
         if de is not None and de > 2.0:
             red_flags.append(f"D/E of {de:.1f} — company may struggle in a debt deleveraging cycle")
@@ -78,6 +79,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=15.0,
             description=geo_desc,
             source="Principles, Dalio — diversification as risk management",
+            explanation="Dalio's All-Weather philosophy seeks assets resilient across geographies and economic regimes. Companies earning revenue globally are less vulnerable to single-country recessions, currency crises, or geopolitical disruptions — providing natural risk diversification.",
         ))
 
         # ── Rule 3: Inflation sensitivity (pricing power) — 15 pts ─────────
@@ -95,6 +97,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=15.0,
             description=pp_desc,
             source="Bridgewater All-Weather concept — inflation-hedging assets",
+            explanation="In inflationary environments, companies with pricing power can raise prices to protect margins. Gross margin level and trend serve as a proxy: high, stable, or expanding gross margins indicate the ability to pass rising costs to customers — a natural inflation hedge.",
         ))
         if margins and margins[-1] < 0.15:
             red_flags.append(
@@ -116,6 +119,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=20.0,
             description=stability_desc,
             source="Bridgewater All-Weather Portfolio framework",
+            explanation="Dalio designs for resilience across four economic environments (rising/falling growth, rising/falling inflation). Low coefficient of variation in revenue growth rates proves the business generates stable returns regardless of the economic cycle.",
         ))
 
         # ── Rule 5: Beta / systematic risk — 15 pts ────────────────────────
@@ -132,6 +136,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=15.0,
             description=beta_desc,
             source="Bridgewater risk parity principles",
+            explanation="Beta measures stock sensitivity to broad market movements. Beta = 1.0 moves in line with the market. Dalio's risk parity framework favors moderate beta (0.5–1.2): not so defensive it offers no growth, not so cyclical it amplifies portfolio drawdowns in bear markets.",
         ))
         if beta is not None and beta > 1.8:
             red_flags.append(
@@ -151,6 +156,7 @@ class DalioInvestor(BaseInvestor):
             points_possible=15.0,
             description=currency_desc,
             source="Principles for Navigating Big Debt Crises, Dalio — currency risk",
+            explanation="Currency exposure is a macro risk factor Dalio monitors carefully. Large multinationals earning revenue in many currencies have natural hedges; domestic companies or those with heavy single-currency exposure face concentrated risk that can erode returns for investors.",
         ))
 
         return self._build_result(rules, red_flags)

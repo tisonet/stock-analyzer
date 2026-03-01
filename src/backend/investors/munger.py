@@ -57,6 +57,7 @@ class MungerInvestor(BaseInvestor):
                 points_awarded=20.0 * simplicity_score,
                 points_possible=r1.points_possible,
                 description=r1.description, source=r1.source,
+                explanation="Munger only invests in businesses simple enough to understand fully. This rule proxies simplicity via the length of the business description: concise descriptions suggest a focused, understandable business; long complex ones suggest hard-to-analyze conglomerates.",
             ))
         else:
             rules.append(r1)
@@ -75,6 +76,7 @@ class MungerInvestor(BaseInvestor):
                 else "Insider ownership data unavailable"
             ),
             source="Poor Charlie's Almanack — incentive alignment",
+            explanation="When executives own significant equity, their personal wealth rises and falls with shareholder returns, aligning incentives. Insider ownership above 5% is evidence of 'skin in the game' — management has a personal financial stake in the company's success.",
         )
         rules.append(r2)
         if insider_own is not None and insider_own < 0.01:
@@ -96,6 +98,7 @@ class MungerInvestor(BaseInvestor):
             points_possible=25.0,
             description=roe_desc,
             source="Seeking Wisdom, Bevelin — Munger on competitive advantages",
+            explanation="Return on Equity (ROE) measures how much profit the company earns on shareholders' money. Consistently high ROE across many years implies a durable competitive advantage that competitors cannot erode — Munger's primary quality test.",
         ))
         if roe_series and statistics.mean(roe_series) < 0.08:
             red_flags.append("Average ROE below 8% — weak or non-existent economic moat")
@@ -116,6 +119,7 @@ class MungerInvestor(BaseInvestor):
             points_possible=20.0,
             description=complexity_desc,
             source="Poor Charlie's Almanack — Invert, always invert",
+            explanation="Munger's 'inversion' principle: instead of asking what could go well, ask what could go wrong. This rule checks four failure conditions: high leverage, cash burn, declining margins, extreme valuation. Fewer triggered factors means the business is more resilient.",
         ))
 
         # ── Rule 5: Return on Equity consistency — 15 pts ──────────────────
@@ -139,6 +143,7 @@ class MungerInvestor(BaseInvestor):
             points_possible=15.0,
             description=roe_consistency_desc,
             source="Berkshire Hathaway Annual Letters — Munger on business quality",
+            explanation="Low variance in Return on Equity (standard deviation below 5%) combined with a strong average (above 12%) indicates a business with stable, predictable returns. This consistency reflects genuine competitive protection — not just a lucky year.",
         ))
 
         return self._build_result(rules, red_flags)

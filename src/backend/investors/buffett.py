@@ -52,6 +52,7 @@ class BuffettInvestor(BaseInvestor):
                 f"10yr avg ROIC = {roic_avg*100:.1f}%" if roic_avg else "No ROIC data"
             ),
             source="The Warren Buffett Way, Hagstrom Ch.4",
+            explanation="Return on Invested Capital (ROIC) shows how efficiently a business uses its capital to generate profits. A 10-year average above 15% confirms a durable competitive advantage — the business consistently earns well above its cost of capital.",
         )
         rules.append(r1)
         if not r1.passed and roic_avg is not None and roic_avg < 0.10:
@@ -72,6 +73,7 @@ class BuffettInvestor(BaseInvestor):
             description=f"D/E = {de:.2f}" if de is not None else "D/E unavailable",
             source="Berkshire Hathaway Annual Letters",
             passed=de < 0.5 if de is not None else None,
+            explanation="Debt-to-Equity compares total debt to shareholders' equity. A ratio below 0.5 means the company is funded primarily with equity, reducing financial fragility and the risk of distress during economic downturns.",
         )
         rules.append(r2)
         if not r2.passed and de is not None and de > 1.5:
@@ -99,6 +101,7 @@ class BuffettInvestor(BaseInvestor):
                 else "FCF/market cap unavailable"
             ),
             source="Berkshire Hathaway Letter 1986",
+            explanation="Owner Earnings (Operating Cash Flow minus maintenance CapEx) represent the real cash a business generates for owners. Dividing by market cap gives an earnings yield — the higher the number, the more cash you receive annually relative to the price paid.",
         )
         rules.append(r3)
         if not r3.passed and owner_earnings_yield is not None and owner_earnings_yield < 2:
@@ -124,6 +127,7 @@ class BuffettInvestor(BaseInvestor):
             ),
             source="Berkshire Hathaway Annual Letters",
             passed=fcf_stdev < 5.0 if fcf_stdev is not None else None,
+            explanation="Free Cash Flow margin consistency measures how stable the company's cash generation is relative to revenue. Low volatility (stdev < 5%) signals reliable, predictable earnings power — a hallmark of businesses with durable pricing power and competitive insulation.",
         )
         rules.append(r4)
         if not r4.passed and fcf_stdev is not None and fcf_stdev > 15:
@@ -146,6 +150,7 @@ class BuffettInvestor(BaseInvestor):
             source="Security Analysis, Graham & Dodd; Berkshire Letters",
             passed=iv_margin > 0 if iv_margin is not None else None,
             partial=min(1.0, max(0, iv_margin / 0.30)) if iv_margin is not None else 1.0,
+            explanation="A Discounted Cash Flow (DCF) analysis estimates what future free cash flows are worth in today's dollars, discounted at 9% per year. A positive margin of safety means the stock trades below this intrinsic value estimate — you're paying less than the business is theoretically worth.",
         )
         if r5.passed and iv_margin is not None:
             # Partial credit: scale from 0 to 20 based on margin depth
@@ -160,6 +165,7 @@ class BuffettInvestor(BaseInvestor):
                 points_possible=r5.points_possible,
                 description=r5.description,
                 source=r5.source,
+                explanation=r5.explanation,
             ))
         else:
             rules.append(r5)
@@ -193,6 +199,7 @@ class BuffettInvestor(BaseInvestor):
             ),
             source="Berkshire Hathaway Letter 1984",
             passed=buyback_positive,
+            explanation="Declining share counts mean management is buying back stock, concentrating ownership and increasing per-share earnings. Rising share counts dilute existing shareholders, reducing value per share even if total profits grow.",
         )
         rules.append(r6)
         if buyback_positive is False:
@@ -214,6 +221,7 @@ class BuffettInvestor(BaseInvestor):
             ),
             source='"Rule #1: Never lose money" — Warren Buffett',
             passed=dd_pct < 40.0 if dd_pct is not None else None,
+            explanation="Maximum drawdown measures the worst peak-to-trough price decline over 10 years. A drawdown below 40% suggests the stock has historically avoided catastrophic losses — consistent with Buffett's Rule #1: never lose money.",
         )
         rules.append(r7)
         if not r7.passed and dd_pct is not None and dd_pct > 60:
