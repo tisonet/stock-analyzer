@@ -16,10 +16,10 @@ WEIGHTS: dict[str, float] = {
     "Munger": 1.0,
     "Graham": 1.0,
     "Lynch": 1.0,
-    "Dalio": 0.8,
+    "Dalio": 0.0,
     "Klarman": 1.0,
     "Terry Smith": 1.0,
-    "Icahn": 1.0,
+    "Icahn": 0.0,
     "AKO Quality": 1.0,
     "Kantesaria": 1.0,
 }
