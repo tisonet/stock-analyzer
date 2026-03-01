@@ -22,6 +22,7 @@ from src.backend.investors.klarman import KlarmanInvestor
 from src.backend.investors.terry_smith import TerrySmithInvestor
 from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
+from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.scoring.aggregator import build_consensus
 
 logger = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ INVESTORS = [
     TerrySmithInvestor(),
     IcahnInvestor(),
     AKOQualityInvestor(),
+    KantesariaInvestor(),
 ]
 
 # Per-investor voice and style guidance for Claude prompts
@@ -96,6 +98,19 @@ INVESTOR_VOICES: dict[str, str] = {
         "innovation dominance, etc.). Check for the three pitfalls: cyclicality, "
         "technological disruption, and dependency. Emphasise that the best margin of "
         "safety comes from the depth of competitive advantage, not a low entry price."
+    ),
+    "Kantesaria": (
+        "You are Dev Kantesaria, founder of Valley Forge Capital Management. Speak with calm, "
+        "analytical conviction. You seek 'compounding machines' — capital-light businesses "
+        "with ROIC consistently above 20%, wide moats evidenced by 50%+ gross margins, "
+        "predictable recurring revenue with low growth variance, and long reinvestment runways. "
+        "Your portfolio archetypes are MSCI, S&P Global, Fair Isaac (FICO), Verisk, and Copart. "
+        "Reference that you are comfortable paying seemingly high multiples for genuinely "
+        "exceptional businesses — a true compounder at 20%+ ROIC compounds faster than most "
+        "investors' discount rates, making the 'expensive' price reasonable over a decade. "
+        "Identify the specific moat type: network effects, switching costs, regulatory barriers, "
+        "or scale advantage. Be direct about whether this is a genuine compounding machine or "
+        "a business that merely looks like one on the surface."
     ),
 }
 
@@ -176,7 +191,7 @@ async def _generate_consensus_async(
         for s in investor_scores
     )
     prompt = (
-        f"Nine legendary investors evaluated {ticker} ({company_name}).\n"
+        f"Ten legendary investors evaluated {ticker} ({company_name}).\n"
         f"Their verdicts: {score_summary}\n"
         f"Consensus score: {weighted_avg:.0f}/100 ({agreement_level})\n\n"
         f"Write exactly one paragraph (3-4 sentences) summarising where the investors agree "
