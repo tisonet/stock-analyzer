@@ -63,6 +63,7 @@ def _make_balance_sheet(
         "Total Liabilities Net Minority Interest": total_liabilities,
         "Stockholders Equity": equity,
         "Total Debt": total_debt,
+        "Long Term Debt": total_debt,   # alias so roic_series finds LTD (GuruFocus formula)
     }
     if shares:
         data["Ordinary Shares Number"] = shares

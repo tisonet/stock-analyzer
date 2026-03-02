@@ -210,21 +210,41 @@ class FinancialData:
         """
         ROIC = NOPAT / Invested Capital
         NOPAT = Operating Income * (1 - tax_rate)
-        Invested Capital = Total Assets - Current Liabilities
-        Source: "The Warren Buffett Way", Hagstrom Ch.4
+        Invested Capital = Stockholders' Equity + Long-term Debt - Cash & Equivalents
+
+        GuruFocus / standard practitioner formula: only capital providers who expect
+        a return are included in IC; excess cash is subtracted because it earns near-zero
+        and should not penalise the operating return calculation.
+
+        Previous formula (Total Assets - Current Liabilities) over-penalised asset-heavy
+        companies and those with large cash hoards (e.g. META, AAPL), producing ROIC
+        values well below what GuruFocus and most sell-side sources report.
+
+        Source: GuruFocus ROIC methodology; Koller, Goedhart & Wessels,
+        "Valuation" (McKinsey, 7th ed.) Ch. 7
         """
         tax = self.tax_rate or 0.25  # default 25% if unavailable
         op_inc = self._series(
             self.income_stmt, "Operating Income", "EBIT", "Ebit"
         )
-        total_a = self._series(self.balance_sheet, "Total Assets")
-        cur_l = self._series(
-            self.balance_sheet, "Current Liabilities", "Total Current Liabilities"
+        equity = self._series(
+            self.balance_sheet,
+            "Stockholders Equity",
+            "Total Stockholders Equity",
+            "Common Stock Equity",
         )
-        n = min(len(op_inc), len(total_a), len(cur_l))
+        ltd = self._series(self.balance_sheet, "Long Term Debt")
+        cash = self._series(
+            self.balance_sheet,
+            "Cash And Cash Equivalents",
+            "Cash Cash Equivalents And Short Term Investments",
+        )
+        n = min(len(op_inc), len(equity))
         roics = []
         for i in range(n):
-            invested_capital = total_a[i] - cur_l[i]
+            ltd_v  = ltd[i]  if i < len(ltd)  else 0.0
+            cash_v = cash[i] if i < len(cash) else 0.0
+            invested_capital = equity[i] + ltd_v - cash_v
             if invested_capital > 0:
                 nopat = op_inc[i] * (1 - tax)
                 roics.append(nopat / invested_capital)

@@ -135,13 +135,13 @@ def test_kantesaria_low_quality_scores_poorly(low_quality_data):
 
 
 def test_kantesaria_high_quality_data_scores_mid_range(high_quality_data):
-    """AAPL-like fixture (ROIC ~16%, GM ~45%) passes 4/6 rules → Buy range."""
+    """AAPL-like fixture (ROIC ~31%, GM ~45%) passes 5/6 rules → Strong Buy range."""
     inv = KantesariaInvestor()
     result = inv.score(high_quality_data)
-    # Passes: capital-light, FCF margin, revenue CAGR, revenue predictability
-    # Fails:  ROIC < 20%, gross margin < 50%
-    assert 40 <= result.total_score <= 70, (
-        f"Expected 40-70 for AAPL-like company, got {result.total_score:.1f}"
+    # Passes: ROIC (31% > 20%), capital-light, FCF margin, revenue CAGR, revenue predictability
+    # Fails:  gross margin < 50%  (only rule that misses)
+    assert 75 <= result.total_score <= 100, (
+        f"Expected 75-100 for AAPL-like company (5/6 rules pass), got {result.total_score:.1f}"
     )
 
 
@@ -163,18 +163,44 @@ def test_kantesaria_roic_rule_passes(compounding_machine_data):
     assert roic_rule.value >= 20.0
 
 
-def test_kantesaria_roic_rule_fails_below_20(high_quality_data):
-    """AAPL-like fixture with ROIC ~16% should fail the 20% threshold."""
+def test_kantesaria_roic_rule_fails_below_20():
+    """Capital-intensive company with low op margins → ROIC ~5% fails the 20% threshold."""
+    # Low-margin, asset-heavy business: op income 6% of revenue, large IC
+    revs    = [50e9] * 10
+    op_incs = [ 3e9] * 10   # 6% op margin
+    ni      = [ 2e9] * 10
+    gp      = [20e9] * 10
+    income = _make_income_stmt(revs, op_incs, ni, gp)
+
+    # Large equity + debt relative to earnings → IC big → ROIC ~5%
+    ta   = [70e9] * 5
+    ca   = [10e9] * 5
+    cl   = [ 8e9] * 5
+    tl   = [40e9] * 5
+    eq   = [30e9] * 5
+    debt = [20e9] * 5   # "Long Term Debt" alias added by _make_balance_sheet
+    balance = _make_balance_sheet(ta, ca, cl, tl, eq, debt)
+    cashflow = _make_cashflow([4e9] * 5, [2e9] * 5)
+
+    data = FinancialData(
+        ticker="LRCO",
+        info={"marketCap": 30e9, "longName": "Low Return Corp"},
+        income_stmt=income,
+        balance_sheet=balance,
+        cash_flow=cashflow,
+        history=_make_history([100] * 2517),
+    )
+
     inv = KantesariaInvestor()
-    result = inv.score(high_quality_data)
+    result = inv.score(data)
     roic_rule = next(
         (r for r in result.rules_passed + result.rules_failed if "ROIC" in r.name), None
     )
     assert roic_rule is not None
-    # ROIC ~16% is above AKO's bar (15%) but below Kantesaria's (20%)
     assert not roic_rule.passed, (
         f"ROIC of {roic_rule.value:.1f}% should fail Kantesaria's 20% threshold"
     )
+    assert roic_rule.value < 20.0
 
 
 def test_kantesaria_roic_inconsistency_rejected():
