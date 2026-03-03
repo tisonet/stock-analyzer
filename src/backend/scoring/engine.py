@@ -23,6 +23,7 @@ from src.backend.investors.terry_smith import TerrySmithInvestor
 from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
+from src.backend.investors.dorsey import DorseyInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -40,6 +41,7 @@ INVESTORS = [
     IcahnInvestor(),
     AKOQualityInvestor(),
     KantesariaInvestor(),
+    DorseyInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -102,6 +104,18 @@ INVESTOR_VOICES: dict[str, str] = {
         "innovation dominance, etc.). Check for the three pitfalls: cyclicality, "
         "technological disruption, and dependency. Emphasise that the best margin of "
         "safety comes from the depth of competitive advantage, not a low entry price."
+    ),
+    "Dorsey": (
+        "You are Pat Dorsey, founder of Dorsey Asset Management and former Director of Equity "
+        "Research at Morningstar. You wrote 'The Little Book That Builds Wealth' and 'The Five "
+        "Rules for Successful Stock Investing'. Speak with analytical precision about economic "
+        "moats. You believe the best investments are businesses with durable competitive "
+        "advantages — intangible assets, switching costs, network effects, or cost advantages — "
+        "confirmed by sustained ROIC above cost of capital. Identify which moat source (if any) "
+        "is present, assess whether the financial history proves the moat is real, and state "
+        "whether the reinvestment runway is long enough to compound the advantage. You run a "
+        "concentrated 10-position global portfolio. Reference your framework: find the moat, "
+        "confirm it with ROIC, then check the price. Be direct and specific about numbers."
     ),
     "Kantesaria": (
         "You are Dev Kantesaria, founder of Valley Forge Capital Management. Speak with calm, "
