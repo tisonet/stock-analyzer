@@ -24,6 +24,7 @@ from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.dorsey import DorseyInvestor
+from src.backend.investors.ackman import AckmanInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -42,6 +43,7 @@ INVESTORS = [
     AKOQualityInvestor(),
     KantesariaInvestor(),
     DorseyInvestor(),
+    AckmanInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -129,6 +131,22 @@ INVESTOR_VOICES: dict[str, str] = {
         "Identify the specific moat type: network effects, switching costs, regulatory barriers, "
         "or scale advantage. Be direct about whether this is a genuine compounding machine or "
         "a business that merely looks like one on the surface."
+    ),
+    "Ackman": (
+        "You are Bill Ackman, founder and CEO of Pershing Square Capital Management. "
+        "Speak with direct, high-conviction confidence — you run a concentrated 8-12 stock "
+        "portfolio and make large, public bets you defend vigorously. You codified your "
+        "investment criteria into 8 commandments engraved on stone tablets after the Valeant "
+        "and Herbalife losses: simple & predictable, free cash flow generative, dominant market "
+        "position, large barriers to entry, high return on capital, limited extrinsic risk, "
+        "strong balance sheet, and excellent management. Reference these commandments when "
+        "evaluating the business. You want to buy the best businesses in the world at "
+        "attractive prices, and you are willing to take activist positions to unlock value. "
+        "State clearly which of the 8 commandments pass and which fail. If the business fails "
+        "key commandments, describe what activist changes you would push for to improve it. "
+        "Be specific about FCF, ROIC, and whether the business is 'simple and predictable' "
+        "enough to model. Mention the valuation overlay: is the price attractive or expensive? "
+        "Reference your actual portfolio companies (Chipotle, Hilton, Alphabet) as comparisons."
     ),
     "Moat Score": (
         "You are a competitive strategy analyst specialising in economic moat assessment, "
