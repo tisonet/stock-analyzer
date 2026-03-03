@@ -210,15 +210,19 @@ class FinancialData:
         """
         ROIC = NOPAT / Invested Capital
         NOPAT = Operating Income * (1 - tax_rate)
-        Invested Capital = Stockholders' Equity + Long-term Debt - Cash & Equivalents
+        Invested Capital = Stockholders' Equity + max(0, Total Debt - Cash)
 
-        GuruFocus / standard practitioner formula: only capital providers who expect
-        a return are included in IC; excess cash is subtracted because it earns near-zero
-        and should not penalise the operating return calculation.
+        For debt-financed companies (Debt > Cash) this equals the standard
+        GuruFocus formula: Equity + Total Debt - Cash.
 
-        Previous formula (Total Assets - Current Liabilities) over-penalised asset-heavy
-        companies and those with large cash hoards (e.g. META, AAPL), producing ROIC
-        values well below what GuruFocus and most sell-side sources report.
+        For net-cash companies (Cash > Debt) the cash deduction is capped at
+        total debt, so IC = Equity. Subtracting excess cash beyond total debt
+        would shrink IC to near-zero and produce artificially high ROIC (e.g.
+        ASML: Cash 12.9B >> LTD 2.7B → IC only 7B → ROIC 88% vs GuruFocus 29%).
+        Flooring IC at Equity avoids that distortion.
+
+        Uses Total Debt (short-term + long-term) rather than Long-term Debt
+        alone, which is more consistent with GuruFocus and standard practice.
 
         Source: GuruFocus ROIC methodology; Koller, Goedhart & Wessels,
         "Valuation" (McKinsey, 7th ed.) Ch. 7
@@ -233,7 +237,11 @@ class FinancialData:
             "Total Stockholders Equity",
             "Common Stock Equity",
         )
-        ltd = self._series(self.balance_sheet, "Long Term Debt")
+        total_debt = self._series(
+            self.balance_sheet,
+            "Total Debt",
+            "Long Term Debt",
+        )
         cash = self._series(
             self.balance_sheet,
             "Cash And Cash Equivalents",
@@ -242,9 +250,12 @@ class FinancialData:
         n = min(len(op_inc), len(equity))
         roics = []
         for i in range(n):
-            ltd_v  = ltd[i]  if i < len(ltd)  else 0.0
-            cash_v = cash[i] if i < len(cash) else 0.0
-            invested_capital = equity[i] + ltd_v - cash_v
+            debt_v = total_debt[i] if i < len(total_debt) else 0.0
+            cash_v = cash[i]       if i < len(cash)       else 0.0
+            # Cap cash deduction at total debt so net-cash companies don't
+            # end up with near-zero IC and inflated ROIC.
+            net_debt = max(0.0, debt_v - cash_v)
+            invested_capital = equity[i] + net_debt
             if invested_capital > 0:
                 nopat = op_inc[i] * (1 - tax)
                 roics.append(nopat / invested_capital)
