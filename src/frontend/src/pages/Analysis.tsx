@@ -8,21 +8,24 @@ import InvestorCard from '../components/InvestorCard'
 import MoatCard from '../components/MoatCard'
 import RedFlagCard from '../components/RedFlagCard'
 import ScenarioTab from '../components/ScenarioTab'
+import ChatPanel from '../components/ChatPanel'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
 
 export default function Analysis() {
   const [state, setState] = useState<AppState>('idle')
   const [result, setResult] = useState<ConsensusScore | null>(null)
+  const [ticker, setTicker] = useState<string>('')
   const [errorMsg, setErrorMsg] = useState<string>('')
   const [activeTab, setActiveTab] = useState<'investors' | 'scenario'>('investors')
 
-  const handleSearch = async (ticker: string) => {
+  const handleSearch = async (sym: string) => {
     setState('loading')
     setResult(null)
+    setTicker(sym.toUpperCase())
     setErrorMsg('')
     try {
-      const data = await analyzeStock(ticker)
+      const data = await analyzeStock(sym)
       setResult(data)
       setState('success')
       setActiveTab('investors')
@@ -31,7 +34,7 @@ export default function Analysis() {
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosErr = err as { response?: { data?: { detail?: string }; status?: number } }
         if (axiosErr.response?.status === 404) {
-          msg = `Ticker not found. Please verify the symbol.`
+          msg = 'Ticker not found. Please verify the symbol.'
         } else if (axiosErr.response?.data?.detail) {
           msg = axiosErr.response.data.detail
         }
@@ -197,6 +200,8 @@ export default function Analysis() {
       <footer className="border-t border-gray-800 mt-16 py-6 text-center text-gray-600 text-xs">
         SuperInvestor Stock Analyzer — Educational purposes only. Not financial advice.
       </footer>
+
+      <ChatPanel ticker={ticker} result={result} />
     </div>
   )
 }

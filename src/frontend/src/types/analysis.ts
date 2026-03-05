@@ -34,6 +34,11 @@ export interface InvestorScore {
   red_flags: string[]
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
 export interface ConsensusScore {
   ticker: string
   weighted_avg: number
