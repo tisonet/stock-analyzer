@@ -98,7 +98,7 @@ POST /api/analyze/{ticker}
 
 **`FinancialData.info`** is the yfinance `.info` dict — use for `pe_ratio`, `pb_ratio`, `market_cap`, `peg_ratio`, etc.
 
-**ROIC formula**: `NOPAT / (Equity + max(0, TotalDebt − Cash))` — cash deduction is capped at total debt to avoid inflated ROIC for net-cash companies (e.g. ASML).
+**ROIC formula**: `NOPAT / Average IC` where `NOPAT = OperatingIncome × (1 − per-year tax rate)` and `Average IC = (IC_beginning + IC_ending) / 2`, `IC = Equity + max(0, TotalDebt − Cash)` — cash deduction is capped at total debt to avoid inflated ROIC for net-cash companies (e.g. ASML). Per-year effective tax rates are used where available, falling back to the most recent rate or 25% default.
 
 ## Python compatibility
 

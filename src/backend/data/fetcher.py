@@ -208,11 +208,12 @@ class FinancialData:
     @property
     def roic_series(self) -> list[float]:
         """
-        ROIC = NOPAT / Invested Capital
-        NOPAT = Operating Income * (1 - tax_rate)
-        Invested Capital = Stockholders' Equity + max(0, Total Debt - Cash)
+        ROIC = NOPAT / Average Invested Capital
+        NOPAT = Operating Income * (1 - effective_tax_rate)
+        Average IC = (IC_beginning + IC_ending) / 2
+        IC = Stockholders' Equity + max(0, Total Debt - Cash)
 
-        For debt-financed companies (Debt > Cash) this equals the standard
+        For debt-financed companies (Debt > Cash) IC equals the standard
         GuruFocus formula: Equity + Total Debt - Cash.
 
         For net-cash companies (Cash > Debt) the cash deduction is capped at
@@ -221,13 +222,31 @@ class FinancialData:
         ASML: Cash 12.9B >> LTD 2.7B → IC only 7B → ROIC 88% vs GuruFocus 29%).
         Flooring IC at Equity avoids that distortion.
 
+        Uses per-year effective tax rates (Tax Provision / Pretax Income) where
+        available, capped at [0%, 50%], falling back to the most recent effective
+        rate or a 25% default.
+
+        Uses average invested capital (beginning-of-period + end-of-period) / 2
+        to match the capital deployed throughout each year's operations, following
+        McKinsey/GuruFocus methodology. For the earliest year where no prior
+        balance sheet exists, ending IC is used directly.
+
         Uses Total Debt (short-term + long-term) rather than Long-term Debt
         alone, which is more consistent with GuruFocus and standard practice.
 
         Source: GuruFocus ROIC methodology; Koller, Goedhart & Wessels,
         "Valuation" (McKinsey, 7th ed.) Ch. 7
         """
-        tax = self.tax_rate or 0.25  # default 25% if unavailable
+        # Per-year effective tax rates (oldest → newest, aligned with income stmt)
+        tax_prov_s = self._series(self.income_stmt, "Tax Provision", "Income Tax Expense")
+        pretax_s = self._series(self.income_stmt, "Pretax Income", "Income Before Tax")
+        default_tax = self.tax_rate or 0.25
+
+        def _tax_for_year(i: int) -> float:
+            if i < len(tax_prov_s) and i < len(pretax_s) and pretax_s[i] != 0:
+                return max(0.0, min(0.5, tax_prov_s[i] / pretax_s[i]))
+            return default_tax
+
         op_inc = self._series(
             self.income_stmt, "Operating Income", "EBIT", "Ebit"
         )
@@ -248,17 +267,27 @@ class FinancialData:
             "Cash Cash Equivalents And Short Term Investments",
         )
         n = min(len(op_inc), len(equity))
-        roics = []
-        for i in range(n):
+        if n == 0:
+            return []
+
+        def _ic(i: int) -> float:
+            """Invested capital at period-end for index i."""
             debt_v = total_debt[i] if i < len(total_debt) else 0.0
             cash_v = cash[i]       if i < len(cash)       else 0.0
             # Cap cash deduction at total debt so net-cash companies don't
             # end up with near-zero IC and inflated ROIC.
             net_debt = max(0.0, debt_v - cash_v)
-            invested_capital = equity[i] + net_debt
-            if invested_capital > 0:
-                nopat = op_inc[i] * (1 - tax)
-                roics.append(nopat / invested_capital)
+            return equity[i] + net_debt
+
+        roics = []
+        for i in range(n):
+            ic_end = _ic(i)
+            # Average IC: use prior-period ending IC as beginning when available.
+            avg_ic = (_ic(i - 1) + ic_end) / 2.0 if i > 0 else ic_end
+            if avg_ic <= 0:
+                continue
+            nopat = op_inc[i] * (1 - _tax_for_year(i))
+            roics.append(nopat / avg_ic)
         return roics
 
     @property
