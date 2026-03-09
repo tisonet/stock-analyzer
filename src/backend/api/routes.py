@@ -9,6 +9,7 @@ import logging
 import anthropic
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from src.backend.config import ANTHROPIC_API_KEY, CLAUDE_MODEL
@@ -164,3 +165,7 @@ async def clear_cache(ticker: str) -> dict:
     ticker = ticker.upper().strip()
     await cache.clear(ticker)
     return {"ticker": ticker, "cleared": True}
+
+
+# Serve built frontend — must be mounted last so API routes take precedence
+app.mount("/", StaticFiles(directory="src/frontend/dist", html=True), name="static")
