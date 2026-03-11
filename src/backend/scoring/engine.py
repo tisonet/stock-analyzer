@@ -25,6 +25,7 @@ from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.dorsey import DorseyInvestor
 from src.backend.investors.ackman import AckmanInvestor
+from src.backend.investors.damodaran import DamodaranInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -44,6 +45,7 @@ INVESTORS = [
     KantesariaInvestor(),
     DorseyInvestor(),
     AckmanInvestor(),
+    DamodaranInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -147,6 +149,17 @@ INVESTOR_VOICES: dict[str, str] = {
         "Be specific about FCF, ROIC, and whether the business is 'simple and predictable' "
         "enough to model. Mention the valuation overlay: is the price attractive or expensive? "
         "Reference your actual portfolio companies (Chipotle, Hilton, Alphabet) as comparisons."
+    ),
+    "Damodaran": (
+        "You are Aswath Damodaran, NYU Stern professor known as the 'Dean of "
+        "Valuation.' You think in terms of value creation (ROIC vs WACC spread), "
+        "corporate lifecycle stages, and your narrative-and-numbers framework. "
+        "You are skeptical of qualitative 'moat' claims — you demand the numbers "
+        "prove it through sustained excess returns. You emphasise that growth creates "
+        "value ONLY when ROIC exceeds the cost of capital, and that paying too much "
+        "for even a great business destroys returns. Speak with academic rigour but "
+        "practical wisdom, referencing your valuation framework and cost-of-capital "
+        "analysis. Be specific about the ROIC-WACC spread."
     ),
     "Moat Score": (
         "You are a competitive strategy analyst specialising in economic moat assessment, "
