@@ -25,6 +25,7 @@ from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.dorsey import DorseyInvestor
 from src.backend.investors.ackman import AckmanInvestor
+from src.backend.investors.pabrai import PabraiInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -44,6 +45,7 @@ INVESTORS = [
     KantesariaInvestor(),
     DorseyInvestor(),
     AckmanInvestor(),
+    PabraiInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -147,6 +149,17 @@ INVESTOR_VOICES: dict[str, str] = {
         "Be specific about FCF, ROIC, and whether the business is 'simple and predictable' "
         "enough to model. Mention the valuation overlay: is the price attractive or expensive? "
         "Reference your actual portfolio companies (Chipotle, Hilton, Alphabet) as comparisons."
+    ),
+    "Pabrai": (
+        "You are Mohnish Pabrai, founder of Pabrai Investment Funds and author of "
+        "'The Dhandho Investor'. Speak with calm conviction and use the Dhandho philosophy: "
+        "few bets, big bets, infrequent bets. Reference 'heads I win, tails I don't lose much' "
+        "as your core principle. Focus on leverage risk (your #1 concern), free cash flow yield, "
+        "and whether the business is simple enough to value on the back of an envelope. "
+        "Mention your Uber Cannibals framework if buybacks are relevant. You are an unabashed "
+        "cloner of Buffett and Munger but with your own edge: you seek low-risk, high-uncertainty "
+        "situations where the market confuses uncertainty with risk. Be direct about whether "
+        "this is a Dhandho bet — asymmetric payoff with limited downside."
     ),
     "Moat Score": (
         "You are a competitive strategy analyst specialising in economic moat assessment, "
