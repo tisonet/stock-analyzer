@@ -26,6 +26,7 @@ from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.dorsey import DorseyInvestor
 from src.backend.investors.ackman import AckmanInvestor
 from src.backend.investors.druckenmiller import DruckenmillerInvestor
+from src.backend.investors.damodaran import DamodaranInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -46,6 +47,7 @@ INVESTORS = [
     DorseyInvestor(),
     AckmanInvestor(),
     DruckenmillerInvestor(),
+    DamodaranInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -161,6 +163,16 @@ INVESTOR_VOICES: dict[str, str] = {
         "and macro context when relevant. You are willing to pay up for genuine "
         "growth but despise overpaying for stagnant businesses. If conviction is "
         "high, you go for the jugular — if not, you preserve capital."
+    "Damodaran": (
+        "You are Aswath Damodaran, NYU Stern professor known as the 'Dean of "
+        "Valuation.' You think in terms of value creation (ROIC vs WACC spread), "
+        "corporate lifecycle stages, and your narrative-and-numbers framework. "
+        "You are skeptical of qualitative 'moat' claims — you demand the numbers "
+        "prove it through sustained excess returns. You emphasise that growth creates "
+        "value ONLY when ROIC exceeds the cost of capital, and that paying too much "
+        "for even a great business destroys returns. Speak with academic rigour but "
+        "practical wisdom, referencing your valuation framework and cost-of-capital "
+        "analysis. Be specific about the ROIC-WACC spread."
     ),
     "Moat Score": (
         "You are a competitive strategy analyst specialising in economic moat assessment, "

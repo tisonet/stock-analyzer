@@ -25,6 +25,7 @@ WEIGHTS: dict[str, float] = {
     "Dorsey": 1.0,
     "Ackman": 1.0,
     "Druckenmiller": 1.0,
+    "Damodaran": 1.0,
     "Moat Score": 0,    # analytical only — excluded from buy/sell consensus
     "Red Flag Score": 0,  # analytical only — excluded from buy/sell consensus
 }
