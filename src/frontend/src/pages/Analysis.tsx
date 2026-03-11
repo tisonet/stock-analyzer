@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ConsensusScore } from '../types/analysis'
 import { MOAT_INVESTOR_NAME, ANTI_MOAT_INVESTOR_NAME } from '../types/analysis'
 import { analyzeStock } from '../api/client'
@@ -12,7 +12,13 @@ import ChatPanel from '../components/ChatPanel'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
 
-export default function Analysis() {
+interface AnalysisProps {
+  initialTicker?: string
+  onSwitchToPortfolio?: () => void
+  onBackToPortfolio?: () => void
+}
+
+export default function Analysis({ initialTicker, onSwitchToPortfolio, onBackToPortfolio }: AnalysisProps) {
   const [state, setState] = useState<AppState>('idle')
   const [result, setResult] = useState<ConsensusScore | null>(null)
   const [ticker, setTicker] = useState<string>('')
@@ -44,6 +50,13 @@ export default function Analysis() {
     }
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (initialTicker) {
+      handleSearch(initialTicker)
+    }
+  }, [initialTicker])
+
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Header */}
@@ -61,8 +74,33 @@ export default function Analysis() {
           <div className="flex-1 max-w-md">
             <SearchBar onSearch={handleSearch} loading={state === 'loading'} />
           </div>
+          {onSwitchToPortfolio && (
+            <div className="flex-shrink-0 flex bg-gray-800 rounded-lg p-0.5">
+              <button className="px-4 py-1.5 text-sm rounded-md font-medium transition-colors bg-gray-700 text-gray-100">
+                Single Stock
+              </button>
+              <button
+                onClick={onSwitchToPortfolio}
+                className="px-4 py-1.5 text-sm rounded-md font-medium transition-colors text-gray-500 hover:text-gray-300"
+              >
+                Portfolio
+              </button>
+            </div>
+          )}
         </div>
       </header>
+
+      {/* Back to portfolio breadcrumb when drilling in from portfolio */}
+      {onBackToPortfolio && (
+        <div className="max-w-7xl mx-auto px-4 pt-4">
+          <button
+            onClick={onBackToPortfolio}
+            className="inline-flex items-center gap-1.5 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            <span>&larr;</span> Back to Portfolio
+          </button>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Idle state */}
