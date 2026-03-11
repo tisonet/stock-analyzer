@@ -46,3 +46,10 @@ export interface ConsensusScore {
   investor_scores: InvestorScore[]
   overall_narrative: string
 }
+
+export interface PortfolioStock {
+  ticker: string
+  result: ConsensusScore | null
+  status: 'pending' | 'loading' | 'success' | 'error'
+  error?: string
+}

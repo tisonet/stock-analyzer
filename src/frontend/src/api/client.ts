@@ -20,6 +20,27 @@ export async function chatWithAnalysis(
   return res.data.answer
 }
 
+export async function analyzePortfolio(
+  tickers: string[],
+  onProgress: (ticker: string, result: ConsensusScore | null, error?: string) => void
+): Promise<void> {
+  const promises = tickers.map(async (t) => {
+    try {
+      const result = await analyzeStock(t)
+      onProgress(t, result)
+    } catch (err: unknown) {
+      let msg = 'Analysis failed'
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosErr = err as { response?: { data?: { detail?: string }; status?: number } }
+        if (axiosErr.response?.status === 404) msg = 'Ticker not found'
+        else if (axiosErr.response?.data?.detail) msg = axiosErr.response.data.detail
+      }
+      onProgress(t, null, msg)
+    }
+  })
+  await Promise.allSettled(promises)
+}
+
 export async function checkHealth(): Promise<boolean> {
   try {
     await api.get('/health')
