@@ -267,23 +267,33 @@ class DruckenmillerInvestor(BaseInvestor):
             )
 
         # ── Rule 7: ROE > 15% — 10 pts ──────────────────────────────────────
+        # Falls back to ROIC when equity is negative (buyback-heavy companies).
         roe_series = data.roe_series
-        roe_avg = statistics.mean(roe_series) if roe_series else None
+        ret_series = roe_series
+        ret_label = "ROE"
+        if not roe_series:
+            roic_s = data.roic_series
+            if roic_s:
+                ret_series = roic_s
+                ret_label = "ROIC"
+        ret_avg = statistics.mean(ret_series) if ret_series else None
         r7 = self._make_rule(
             name="ROE > 15% (capital efficiency)",
-            value=roe_avg * 100 if roe_avg is not None else None,
+            value=ret_avg * 100 if ret_avg is not None else None,
             threshold=15.0,
             points_possible=10.0,
             description=(
-                f"Avg ROE = {roe_avg*100:.1f}% across {len(roe_series)} years"
-                if roe_avg is not None else "ROE data unavailable"
+                f"Avg {ret_label} = {ret_avg*100:.1f}% across {len(ret_series)} years"
+                + (" (ROIC fallback — negative equity)" if ret_label == "ROIC" else "")
+                if ret_avg is not None else "Data unavailable"
             ),
             source="Druckenmiller — high ROE signals efficient capital allocation",
             explanation=(
                 "Return on Equity measures how efficiently a company converts "
                 "shareholder capital into profits. ROE above 15% indicates the "
                 "business earns well above its cost of equity — a sign of "
-                "competitive advantage and efficient capital deployment."
+                "competitive advantage and efficient capital deployment. "
+                "Falls back to ROIC for companies with negative equity."
             ),
         )
         rules.append(r7)

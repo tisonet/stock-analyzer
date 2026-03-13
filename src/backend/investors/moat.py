@@ -291,18 +291,27 @@ class MoatInvestor(BaseInvestor):
         # ── Rule 4: Brand Strength & Customer Loyalty (11 pts) ───────────────
         # Strong brands sustain ROE above the cost of equity over time because
         # customers consistently pay a premium. ROE >= 15% over 3yr confirms this.
+        # Falls back to ROIC when equity is negative (buyback-heavy companies).
         # Source: Dorsey, "The Little Book That Builds Wealth" Ch. 4; GuruFocus Criterion 4
         roe_s = data.roe_series
-        roe_avg: Optional[float] = (
-            statistics.mean(roe_s[-min(len(roe_s), 3):]) if roe_s else None
+        r4_series = roe_s
+        r4_label = "ROE"
+        if not roe_s:
+            roic_fb = data.roic_series
+            if roic_fb:
+                r4_series = roic_fb
+                r4_label = "ROIC"
+        r4_avg: Optional[float] = (
+            statistics.mean(r4_series[-min(len(r4_series), 3):]) if r4_series else None
         )
-        if roe_avg is not None:
+        if r4_avg is not None:
+            suffix = " (ROIC fallback — negative equity)" if r4_label == "ROIC" else ""
             r4_desc = (
-                f"ROE (3yr avg)={roe_avg * 100:.1f}% — "
+                f"{r4_label} (3yr avg)={r4_avg * 100:.1f}%{suffix} — "
                 + (
                     "sustained above cost of equity; brand loyalty drives recurring premium pricing"
-                    if roe_avg >= 0.15
-                    else "ROE below 15%; brand premium insufficient to drive above-average equity returns"
+                    if r4_avg >= 0.15
+                    else f"{r4_label} below 15%; brand premium insufficient to drive above-average equity returns"
                 )
             )
         else:
@@ -310,7 +319,7 @@ class MoatInvestor(BaseInvestor):
 
         r4 = self._make_rule(
             name="Brand Strength: ROE >= 15% (3yr avg)",
-            value=roe_avg * 100 if roe_avg is not None else None,
+            value=r4_avg * 100 if r4_avg is not None else None,
             threshold=15.0,
             points_possible=11.0,
             description=r4_desc,
@@ -318,12 +327,12 @@ class MoatInvestor(BaseInvestor):
                 "GuruFocus Moat Score — Criterion 4: Strong Brand Strength & Deep Customer Loyalty; "
                 "Dorsey, 'The Little Book That Builds Wealth' (2008)"
             ),
-            explanation="A strong brand enables consistently above-average Return on Equity by commanding premium pricing. ROE above 15% over a 3-year average confirms that brand loyalty translates into sustained financial returns that exceed the cost of equity capital.",
+            explanation="A strong brand enables consistently above-average Return on Equity by commanding premium pricing. ROE above 15% over a 3-year average confirms that brand loyalty translates into sustained financial returns that exceed the cost of equity capital. Falls back to ROIC for companies with negative equity.",
         )
         rules.append(r4)
-        if roe_avg is not None and roe_avg < 0:
+        if r4_avg is not None and r4_avg < 0:
             red_flags.append(
-                "Negative ROE — business is destroying shareholder equity; no brand loyalty premium"
+                f"Negative {r4_label} — business is destroying shareholder equity; no brand loyalty premium"
             )
 
         # ── Rule 5: Cost Advantages & Operating Leverage (11 pts) ───────────

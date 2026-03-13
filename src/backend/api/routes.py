@@ -168,4 +168,6 @@ async def clear_cache(ticker: str) -> dict:
 
 
 # Serve built frontend — must be mounted last so API routes take precedence
-app.mount("/", StaticFiles(directory="src/frontend/dist", html=True), name="static")
+import os
+if os.path.isdir("src/frontend/dist"):
+    app.mount("/", StaticFiles(directory="src/frontend/dist", html=True), name="static")

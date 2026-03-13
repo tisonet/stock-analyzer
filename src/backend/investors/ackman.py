@@ -637,7 +637,12 @@ class AckmanInvestor(BaseInvestor):
         else:                   roc3 = 1.0
 
         # ROC-4: ROE TTM (leveraged return, secondary check)
+        # Falls back to ROIC TTM when equity is negative.
         roe_ttm = roe_s[-1] if roe_s else None
+        roc4_label = "ROE"
+        if roe_ttm is None and roic_s:
+            roe_ttm = roic_s[-1]
+            roc4_label = "ROIC"
         if   roe_ttm is None:   roc4 = 5.0
         elif roe_ttm > 0.25:    roc4 = 10.0
         elif roe_ttm > 0.20:    roc4 = 8.0
@@ -666,7 +671,7 @@ class AckmanInvestor(BaseInvestor):
         if roic_std is not None:
             parts.append(f"ROIC std={roic_std * 100:.1f}pp (→{roc3:.0f}/10)")
         if roe_ttm is not None:
-            parts.append(f"ROE={roe_ttm * 100:.1f}% (→{roc4:.0f}/10)")
+            parts.append(f"{roc4_label}={roe_ttm * 100:.1f}% (→{roc4:.0f}/10)")
 
         return score, "; ".join(parts) or "Insufficient ROIC / ROE data"
 

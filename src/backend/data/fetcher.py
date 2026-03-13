@@ -424,7 +424,13 @@ class FinancialData:
 
     @property
     def roe_series(self) -> list[float]:
-        """Return on Equity = Net Income / Stockholders Equity."""
+        """Return on Equity = Net Income / Stockholders Equity.
+
+        Years with zero or negative equity are skipped — negative equity
+        (common in buyback-heavy companies like FICO, MCD, SBUX) makes
+        ROE economically meaningless and produces misleading negative
+        values that don't reflect actual profitability.
+        """
         ni = self.net_income_series
         eq = self._series(
             self.balance_sheet,
@@ -435,7 +441,7 @@ class FinancialData:
         n = min(len(ni), len(eq))
         roes = []
         for i in range(n):
-            if eq[i] != 0:
+            if eq[i] > 0:
                 roes.append(ni[i] / eq[i])
         return roes
 

@@ -85,23 +85,31 @@ class MungerInvestor(BaseInvestor):
         # ── Rule 3: Qualitative moat — ROE consistency proxy — 25 pts ──────
         # "The best business to own is one that over an extended period can
         #  employ large amounts of capital at very high rates." — Munger
+        # Falls back to ROIC when equity is negative (buyback-heavy companies).
         roe_series = data.roe_series
-        roe_score, roe_desc = self._moat_from_roe(roe_series)
+        return_series = roe_series
+        return_label = "ROE"
+        if not roe_series:
+            roic_s = data.roic_series
+            if roic_s:
+                return_series = roic_s
+                return_label = "ROIC"
+        roe_score, roe_desc = self._moat_from_roe(return_series, return_label)
         r3_pts = 25.0 * roe_score if roe_score is not None else 0.0
         from src.backend.investors.base_investor import Rule as R
         rules.append(R(
             name="Durable economic moat (ROE consistency)",
             passed=roe_score is not None and roe_score >= 0.6,
-            value=statistics.mean(roe_series) * 100 if roe_series else None,
+            value=statistics.mean(return_series) * 100 if return_series else None,
             threshold=15.0,   # 15% avg ROE as moat threshold
             points_awarded=r3_pts,
             points_possible=25.0,
             description=roe_desc,
             source="Seeking Wisdom, Bevelin — Munger on competitive advantages",
-            explanation="Return on Equity (ROE) measures how much profit the company earns on shareholders' money. Consistently high ROE across many years implies a durable competitive advantage that competitors cannot erode — Munger's primary quality test.",
+            explanation="Return on Equity (ROE) measures how much profit the company earns on shareholders' money. Consistently high ROE across many years implies a durable competitive advantage that competitors cannot erode — Munger's primary quality test. Falls back to ROIC for companies with negative equity (buyback-heavy firms like FICO, MCD, SBUX).",
         ))
-        if roe_series and statistics.mean(roe_series) < 0.08:
-            red_flags.append("Average ROE below 8% — weak or non-existent economic moat")
+        if return_series and statistics.mean(return_series) < 0.08:
+            red_flags.append(f"Average {return_label} below 8% — weak or non-existent economic moat")
 
         # ── Rule 4: Penalise excessive complexity — 20 pts ─────────────────
         # "Munger's inversion: list what would make this business fail.
@@ -124,26 +132,27 @@ class MungerInvestor(BaseInvestor):
 
         # ── Rule 5: Return on Equity consistency — 15 pts ──────────────────
         # Low variance in ROE = pricing power = moat
+        # Falls back to ROIC when equity is negative.
         roe_consistency_pts = 0.0
-        roe_consistency_desc = "Insufficient ROE history"
+        roe_consistency_desc = f"Insufficient {return_label} history"
         roe_consistency_pass = None
-        if len(roe_series) >= 4:
-            stdev = statistics.stdev(roe_series) * 100
-            avg_roe = statistics.mean(roe_series) * 100
-            roe_consistency_pass = stdev < 5.0 and avg_roe > 12.0
+        if len(return_series) >= 4:
+            stdev = statistics.stdev(return_series) * 100
+            avg_ret = statistics.mean(return_series) * 100
+            roe_consistency_pass = stdev < 5.0 and avg_ret > 12.0
             roe_consistency_pts = 15.0 if roe_consistency_pass else 0.0
-            roe_consistency_desc = f"ROE avg={avg_roe:.1f}%, stdev={stdev:.1f}%"
+            roe_consistency_desc = f"{return_label} avg={avg_ret:.1f}%, stdev={stdev:.1f}%"
         from src.backend.investors.base_investor import Rule as R
         rules.append(R(
             name="ROE consistent > 12% (stdev < 5%)",
             passed=roe_consistency_pass or False,
-            value=statistics.mean(roe_series) * 100 if roe_series else None,
+            value=statistics.mean(return_series) * 100 if return_series else None,
             threshold=12.0,
             points_awarded=roe_consistency_pts,
             points_possible=15.0,
             description=roe_consistency_desc,
             source="Berkshire Hathaway Annual Letters — Munger on business quality",
-            explanation="Low variance in Return on Equity (standard deviation below 5%) combined with a strong average (above 12%) indicates a business with stable, predictable returns. This consistency reflects genuine competitive protection — not just a lucky year.",
+            explanation="Low variance in Return on Equity (standard deviation below 5%) combined with a strong average (above 12%) indicates a business with stable, predictable returns. This consistency reflects genuine competitive protection — not just a lucky year. Falls back to ROIC for companies with negative equity.",
         ))
 
         return self._build_result(rules, red_flags)
@@ -175,17 +184,21 @@ class MungerInvestor(BaseInvestor):
             desc = f"Very complex description ({words} words) — Munger would likely avoid"
         return score, desc
 
-    def _moat_from_roe(self, roe_series: list[float]) -> tuple[float | None, str]:
-        """Score moat quality 0–1 from ROE series."""
-        if not roe_series:
+    def _moat_from_roe(
+        self, return_series: list[float], label: str = "ROE",
+    ) -> tuple[float | None, str]:
+        """Score moat quality 0–1 from ROE (or ROIC fallback) series."""
+        if not return_series:
             return None, "No ROE data available"
-        avg_roe = statistics.mean(roe_series) * 100
-        years_above_15 = sum(1 for r in roe_series if r > 0.15)
-        pct_above_15 = years_above_15 / len(roe_series)
+        avg_ret = statistics.mean(return_series) * 100
+        years_above_15 = sum(1 for r in return_series if r > 0.15)
+        pct_above_15 = years_above_15 / len(return_series)
         score = min(1.0, pct_above_15 * 1.2)  # slightly generous
+        suffix = " (ROIC fallback — negative equity)" if label == "ROIC" else ""
         return score, (
-            f"Avg ROE = {avg_roe:.1f}%, {years_above_15}/{len(roe_series)} years > 15% "
+            f"Avg {label} = {avg_ret:.1f}%, {years_above_15}/{len(return_series)} years > 15% "
             f"— {'strong moat' if score > 0.7 else 'moderate moat' if score > 0.4 else 'weak moat'}"
+            f"{suffix}"
         )
 
     def _complexity_check(
