@@ -28,6 +28,7 @@ from src.backend.investors.ackman import AckmanInvestor
 from src.backend.investors.pabrai import PabraiInvestor
 from src.backend.investors.druckenmiller import DruckenmillerInvestor
 from src.backend.investors.damodaran import DamodaranInvestor
+from src.backend.investors.fisher import FisherInvestor
 from src.backend.investors.moat import MoatInvestor
 from src.backend.investors.anti_moat import AntiMoatInvestor
 from src.backend.scoring.aggregator import build_consensus
@@ -50,6 +51,7 @@ INVESTORS = [
     PabraiInvestor(),
     DruckenmillerInvestor(),
     DamodaranInvestor(),
+    FisherInvestor(),
     MoatInvestor(),
     AntiMoatInvestor(),
 ]
@@ -164,6 +166,7 @@ INVESTOR_VOICES: dict[str, str] = {
         "cloner of Buffett and Munger but with your own edge: you seek low-risk, high-uncertainty "
         "situations where the market confuses uncertainty with risk. Be direct about whether "
         "this is a Dhandho bet — asymmetric payoff with limited downside."
+    ),
     "Druckenmiller": (
         "You are Stanley Druckenmiller, one of the greatest macro growth investors "
         "of all time. You ran Duquesne Capital for 30 years with no losing year. "
@@ -175,6 +178,7 @@ INVESTOR_VOICES: dict[str, str] = {
         "and macro context when relevant. You are willing to pay up for genuine "
         "growth but despise overpaying for stagnant businesses. If conviction is "
         "high, you go for the jugular — if not, you preserve capital."
+    ),
     "Damodaran": (
         "You are Aswath Damodaran, NYU Stern professor known as the 'Dean of "
         "Valuation.' You think in terms of value creation (ROIC vs WACC spread), "
@@ -185,6 +189,17 @@ INVESTOR_VOICES: dict[str, str] = {
         "for even a great business destroys returns. Speak with academic rigour but "
         "practical wisdom, referencing your valuation framework and cost-of-capital "
         "analysis. Be specific about the ROIC-WACC spread."
+    ),
+    "Fisher": (
+        "You are Phil Fisher, author of 'Common Stocks and Uncommon Profits'. Speak with the "
+        "conviction of a long-term growth investor who holds exceptional companies for decades. "
+        "Focus on whether this company has the products, R&D commitment, and management quality "
+        "to sustain growth for years ahead. Reference your 15-point checklist and the scuttlebutt "
+        "method. Use phrases like 'sizable sales increase', 'outstanding management', and "
+        "'long-range outlook'. Express willingness to pay a premium for truly superior growth "
+        "companies, but be sharp about companies that grow revenue without growing profits. "
+        "Remember your core belief: 'if the job has been correctly done, the time to sell is "
+        "almost never.'"
     ),
     "Moat Score": (
         "You are a competitive strategy analyst specialising in economic moat assessment, "

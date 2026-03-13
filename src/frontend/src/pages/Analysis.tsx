@@ -111,7 +111,7 @@ export default function Analysis({ initialTicker, onSwitchToPortfolio, onBackToP
               Evaluate any stock like the legends
             </h2>
             <p className="text-gray-500 max-w-md mx-auto">
-              Enter a ticker symbol above to get a comprehensive analysis from 12 legendary
+              Enter a ticker symbol above to get a comprehensive analysis from 16 legendary
               investors plus a dedicated economic moat assessment and red flag detector.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto mt-8 text-left">
@@ -128,6 +128,10 @@ export default function Analysis({ initialTicker, onSwitchToPortfolio, onBackToP
                 { icon: '🔢', name: 'Dev Kantesaria', style: 'Compounding machines + ROIC' },
                 { icon: '🏛️', name: 'Pat Dorsey', style: 'Economic moats + ROIC confirmation' },
                 { icon: '🎪', name: 'Bill Ackman', style: '8 commandments + activist value' },
+                { icon: '🙏', name: 'Mohnish Pabrai', style: 'Dhandho + asymmetric bets' },
+                { icon: '📈', name: 'Stanley Druckenmiller', style: 'Earnings momentum + macro' },
+                { icon: '🎓', name: 'Aswath Damodaran', style: 'ROIC-WACC spread + valuation' },
+                { icon: '🌱', name: 'Phil Fisher', style: 'Growth + R&D + scuttlebutt' },
                 { icon: '🏰', name: 'Moat Score', style: '9-criteria moat analysis (0–10)' },
                 { icon: '🚨', name: 'Red Flag Score', style: '12 forensic distress metrics' },
               ].map((inv) => (

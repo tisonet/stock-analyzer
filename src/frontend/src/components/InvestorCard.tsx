@@ -21,6 +21,15 @@ const INVESTOR_ICONS: Record<string, string> = {
   'Terry Smith': '🎯',
   'Icahn': '⚔️',
   'AKO Quality': '💎',
+  Kantesaria: '🔢',
+  Dorsey: '🏛️',
+  Ackman: '🎪',
+  Pabrai: '🙏',
+  Druckenmiller: '📈',
+  Damodaran: '🎓',
+  Fisher: '🌱',
+  'Moat Score': '🏰',
+  'Red Flag Score': '🚨',
 }
 
 interface InvestorCardProps {

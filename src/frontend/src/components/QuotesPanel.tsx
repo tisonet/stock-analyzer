@@ -63,6 +63,42 @@ const QUOTES: Record<string, InvestorQuotes> = {
     'Hold': 'The business quality is real, but one or two metrics need more runway before I build a full position. Compounders reward patience — I would rather wait for confirmation than overpay for potential.',
     'Avoid': 'Without high and stable ROIC, the compounding thesis collapses. A premium multiple on a mediocre business is the most dangerous trade in investing — the multiple compresses as growth slows, and the damage is permanent.',
   },
+  'Dorsey': {
+    'Strong Buy': 'The moat is wide, ROIC confirms it, and the reinvestment runway is long. This is exactly the kind of business I built my framework to identify — durable competitive advantage at a price that still rewards patience.',
+    'Buy': 'The economic moat is real — I can see it in the ROIC history and the competitive dynamics. The price is reasonable enough to earn a satisfactory return as the moat compounds over time.',
+    'Hold': 'There are signs of a moat, but the financial evidence is not yet conclusive. I need to see more consistency in ROIC before committing capital. Moats are easier to lose than to build.',
+    'Avoid': 'No moat, no investment. Without a durable competitive advantage confirmed by sustained excess returns, this is just another business competing on price — and that is a race to the bottom.',
+  },
+  'Ackman': {
+    'Strong Buy': 'This passes all eight commandments. Simple, predictable, free-cash-flow generative, dominant position, high barriers, high returns on capital, limited extrinsic risk, strong balance sheet. I would take a large, concentrated position here.',
+    'Buy': 'Most of the commandments are met. The business is high quality and the price is attractive. I would build a meaningful position and engage with management if needed to unlock additional value.',
+    'Hold': 'The business has quality characteristics but fails key commandments. I would want to see improvements in specific areas before committing capital. Perhaps an activist approach could unlock the potential here.',
+    'Avoid': 'Too many commandments fail. After Valeant, I carved these criteria in stone for a reason. The best protection against permanent capital loss is avoiding businesses that don\'t meet the bar.',
+  },
+  'Pabrai': {
+    'Strong Buy': 'Heads I win big, tails I don\'t lose much. This is a classic Dhandho bet — low risk, high uncertainty, and the market is giving it away because it confuses the two. Few bets, big bets, infrequent bets.',
+    'Buy': 'The downside is limited and the upside is substantial. Simple business, strong cash flows, reasonable leverage. This is the kind of asymmetric bet the Dhandho framework was built for.',
+    'Hold': 'The business is decent but the margin of safety is not wide enough for my taste. I need a bigger discount before I make it one of my few, concentrated bets.',
+    'Avoid': 'Too much leverage, too little free cash flow, too much complexity. The Dhandho philosophy demands limited downside — and this one has too many ways to lose.',
+  },
+  'Druckenmiller': {
+    'Strong Buy': 'Earnings are accelerating, the momentum is real, and I can see where this business will be in 18 months. When conviction is high, you go for the jugular. This is that moment.',
+    'Buy': 'The rate of change is improving — revenue accelerating, margins expanding, earnings beats ahead. The market hasn\'t fully priced in where this business is headed.',
+    'Hold': 'The fundamentals are stable but I don\'t see acceleration. I need to see the rate of change improving before I commit capital. Flat earnings don\'t excite me.',
+    'Avoid': 'Decelerating earnings, deteriorating momentum, and no catalyst on the horizon. I preserve capital when conviction is low — there is always a better opportunity elsewhere.',
+  },
+  'Damodaran': {
+    'Strong Buy': 'The ROIC-WACC spread is wide and persistent, growth is creating real value, and the price implies a narrative far less optimistic than the numbers support. The valuation gap is substantial.',
+    'Buy': 'Excess returns are real — ROIC meaningfully exceeds cost of capital. Growth is value-accretive at these returns. The current price offers a reasonable margin relative to intrinsic value.',
+    'Hold': 'The business creates some value but the ROIC-WACC spread is thin. Growth at these returns barely moves the needle. The price is roughly fair — neither a bargain nor a trap.',
+    'Avoid': 'ROIC below cost of capital means growth destroys value. Every dollar reinvested makes shareholders poorer. The market is pricing in a narrative the numbers simply do not support.',
+  },
+  'Fisher': {
+    'Strong Buy': 'This company has everything I look for — sizable sales growth, outstanding R&D commitment, improving margins, and management with a long-range outlook. If the job has been correctly done, the time to sell is almost never.',
+    'Buy': 'The growth story is real — revenue is compounding, R&D investment is building future products, and margins are holding. This is the kind of company worth paying a premium for and holding for years.',
+    'Hold': 'Some growth characteristics are present but the full picture is incomplete. I would want to see stronger R&D commitment or more consistent revenue growth before building a position through my scuttlebutt method.',
+    'Avoid': 'Without sizable sales growth and a commitment to future products through R&D, this fails my 15-point checklist. Outstanding companies drive their own growth — this one is not doing that.',
+  },
 }
 
 interface QuotesPanelProps {

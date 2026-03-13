@@ -17,6 +17,10 @@ const HEATMAP_INVESTORS = [
   'Kantesaria',
   'Dorsey',
   'Ackman',
+  'Pabrai',
+  'Druckenmiller',
+  'Damodaran',
+  'Fisher',
 ]
 
 function getCellBg(score: number): string {
@@ -52,6 +56,10 @@ const SHORT_NAMES: Record<string, string> = {
   Kantesaria: 'Kant',
   Dorsey: 'Dors',
   Ackman: 'Ackm',
+  Pabrai: 'Pabr',
+  Druckenmiller: 'Druc',
+  Damodaran: 'Damo',
+  Fisher: 'Fish',
 }
 
 export default function PortfolioHeatmap({ results }: PortfolioHeatmapProps) {
