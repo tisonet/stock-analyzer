@@ -10,11 +10,11 @@ make install
 
 # Backend (from project root)
 make backend
-# or: python3 -m uvicorn src.backend.api.routes:app --reload --port 8000
+# or: python3 -m uvicorn src.backend.api.routes:app --reload --port 8000 --host 0.0.0.0
 
 # Frontend
 make frontend
-# or: cd src/frontend && npm run dev
+# or: cd src/frontend && npm run dev   (vite.config.ts sets host: 0.0.0.0 automatically)
 
 # Run both concurrently
 make dev
@@ -34,6 +34,25 @@ make cache-clear TICKER=AAPL   # clear one ticker
 make cache-clear               # clear all
 make cache-list                # list cached tickers
 ```
+
+## Production deployment (single port, macOS auto-start)
+
+The app runs as a **launchd service** (`~/Library/LaunchAgents/com.stock-analyzer.plist`) that starts automatically on login and restarts on crash.
+
+```bash
+# Build frontend (must be done before starting production backend)
+cd src/frontend && npm run build && cd ../..
+
+# Reload service after code/config changes
+launchctl unload ~/Library/LaunchAgents/com.stock-analyzer.plist
+launchctl load   ~/Library/LaunchAgents/com.stock-analyzer.plist
+
+# Logs
+tail -f /tmp/stock-analyzer.log   # stdout
+tail -f /tmp/stock-analyzer.err   # stderr
+```
+
+In production mode the backend (`--host 0.0.0.0 --port 8000`) serves both the API and the built frontend static files from `src/frontend/dist/`. The `StaticFiles` mount in `routes.py` is conditional — it only activates when `dist/` exists, so the dev workflow (no build step) is unaffected.
 
 ## Environment
 

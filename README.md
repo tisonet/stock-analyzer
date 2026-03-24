@@ -147,7 +147,7 @@ pip install -r requirements.txt
 ### 3. Start the backend
 
 ```bash
-python3 -m uvicorn src.backend.api.routes:app --reload --port 8000
+python3 -m uvicorn src.backend.api.routes:app --reload --port 8000 --host 0.0.0.0
 ```
 
 ### 4. Install & start the frontend
@@ -155,10 +155,40 @@ python3 -m uvicorn src.backend.api.routes:app --reload --port 8000
 ```bash
 cd src/frontend
 npm install
-npm run dev -- --host
+npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser (or `http://<your-IP>:5173` from another device on the same network).
+
+---
+
+## Production deployment (single port)
+
+Build the frontend and run only the backend — it serves both the API and the static files on port 8000:
+
+```bash
+# Build frontend
+cd src/frontend && npm run build && cd ../..
+
+# Run production backend (no --reload, multiple workers)
+python3 -m uvicorn src.backend.api.routes:app --host 0.0.0.0 --port 8000 --workers 2
+```
+
+Open `http://<your-IP>:8000` from any device on the network.
+
+### Auto-start on macOS (launchd)
+
+A launchd plist at `~/Library/LaunchAgents/com.stock-analyzer.plist` starts the backend automatically on login and keeps it alive after crashes.
+
+```bash
+# Reload after changes
+launchctl unload ~/Library/LaunchAgents/com.stock-analyzer.plist
+launchctl load   ~/Library/LaunchAgents/com.stock-analyzer.plist
+
+# Logs
+tail -f /tmp/stock-analyzer.log   # stdout
+tail -f /tmp/stock-analyzer.err   # stderr
+```
 
 ---
 
