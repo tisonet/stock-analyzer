@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 from src.backend.config import ANTHROPIC_API_KEY, CLAUDE_MODEL
 from src.backend.data import cache, fetcher
+from src.backend.data.ratios import compute_historical_ratios
 from src.backend.scoring import engine
 
 logging.basicConfig(level="INFO")
@@ -125,6 +126,27 @@ async def analyze(ticker: str) -> dict:
     result = consensus.to_dict()
     await cache.set(ticker, result)
     return result
+
+
+@app.get("/api/ratios/{ticker}")
+async def ratios(ticker: str) -> dict:
+    """
+    Compute year-by-year historical ratios (P/E, P/S, FCF yield, margins)
+    using financial statements and fiscal year-end prices.
+    """
+    ticker = ticker.upper().strip()
+    if not ticker or len(ticker) > 10:
+        raise HTTPException(status_code=400, detail="Invalid ticker symbol")
+
+    try:
+        data = await asyncio.to_thread(fetcher.fetch, ticker)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Data fetch failed for {ticker}: {e}", exc_info=True)
+        raise HTTPException(status_code=502, detail=f"Failed to fetch market data: {e}")
+
+    return compute_historical_ratios(data)
 
 
 @app.post("/api/chat/{ticker}")

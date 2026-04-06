@@ -53,3 +53,20 @@ export interface PortfolioStock {
   status: 'pending' | 'loading' | 'success' | 'error'
   error?: string
 }
+
+export interface RatioYear {
+  year: number
+  pe: number | null
+  ps: number | null
+  fcf_yield: number | null
+  gross_margin: number | null
+  net_margin: number | null
+  fcf_per_share: number | null
+  eps: number | null
+  revenue_per_share: number | null
+}
+
+export interface RatiosResponse {
+  ticker: string
+  years: RatioYear[]
+}

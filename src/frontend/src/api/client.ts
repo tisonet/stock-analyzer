@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ConsensusScore, ChatMessage } from '../types/analysis'
+import type { ConsensusScore, ChatMessage, RatiosResponse } from '../types/analysis'
 
 const api = axios.create({
   baseURL: '/api',
@@ -39,6 +39,11 @@ export async function analyzePortfolio(
     }
   })
   await Promise.allSettled(promises)
+}
+
+export async function fetchRatios(ticker: string): Promise<RatiosResponse> {
+  const response = await api.get<RatiosResponse>(`/ratios/${ticker.toUpperCase()}`)
+  return response.data
 }
 
 export async function checkHealth(): Promise<boolean> {

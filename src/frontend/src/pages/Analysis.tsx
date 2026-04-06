@@ -9,6 +9,7 @@ import MoatCard from '../components/MoatCard'
 import RedFlagCard from '../components/RedFlagCard'
 import ScenarioTab from '../components/ScenarioTab'
 import ChatPanel from '../components/ChatPanel'
+import RatiosPanel from '../components/RatiosPanel'
 
 type AppState = 'idle' | 'loading' | 'success' | 'error'
 
@@ -190,6 +191,9 @@ export default function Analysis({ initialTicker, onSwitchToPortfolio, onBackToP
             <div>
               {/* Consensus */}
               <ConsensusView consensus={result} />
+
+              {/* Historical Ratios — between consensus and moat/redflag */}
+              <RatiosPanel ticker={ticker} />
 
               {/* Moat Score panel — analytical, below consensus */}
               {moatScore && <MoatCard score={moatScore} />}
