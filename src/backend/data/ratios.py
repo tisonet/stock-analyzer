@@ -20,8 +20,12 @@ def _closest_price(history: pd.DataFrame, target_date: pd.Timestamp) -> Optional
     """Return the closing price on or nearest before *target_date*."""
     if history.empty or "Close" not in history.columns:
         return None
-    # Look for the closest date that is <= target_date first, then nearest overall
+    # Normalise tz: history index may be tz-aware (yfinance) while fiscal dates are tz-naive
     idx = history.index
+    if idx.tz is not None and target_date.tzinfo is None:
+        target_date = target_date.tz_localize(idx.tz)
+    elif idx.tz is None and target_date.tzinfo is not None:
+        target_date = target_date.tz_localize(None)
     mask = idx <= target_date
     if mask.any():
         nearest = idx[mask][-1]
