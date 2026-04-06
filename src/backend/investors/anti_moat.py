@@ -244,22 +244,37 @@ class AntiMoatInvestor(BaseInvestor):
         ))
 
         # ── Rule 3: Current Ratio / Liquidity (8 pts) ────────────────────────
-        # current_assets / current_liabilities >= 1.0
-        cr = data.current_ratio
+        # Adjusted current ratio: deferred revenue excluded from current liabilities.
+        # Deferred revenue is pre-collected cash with near-zero delivery cost — it is
+        # not a cash obligation and artificially depresses the ratio for SaaS/subscription
+        # businesses. Red flag only below 0.5x (genuine liquidity crisis).
+        ca = data.current_assets
+        cl = data.current_liabilities
+        deferred = data.current_deferred_revenue or 0.0
+        if ca is not None and cl is not None and cl > 0:
+            adj_cl = max(cl - deferred, 0.0)
+            cr = ca / adj_cl if adj_cl > 0 else None
+        else:
+            cr = data.current_ratio
+            deferred = 0.0
+            adj_cl = None
         r3_passed = cr is not None and cr >= 1.0
+        deferred_note = (
+            f", excl. ${deferred/1e9:.1f}B deferred revenue" if deferred > 0 else ""
+        )
         if cr is not None:
             r3_desc = (
-                f"Current ratio={cr:.2f}x — "
+                f"Adj. current ratio={cr:.2f}x{deferred_note} — "
                 + (
-                    "short-term obligations covered by current assets; no liquidity crisis"
+                    "short-term obligations covered"
                     if r3_passed
-                    else "current assets < current liabilities; company cannot cover near-term obligations"
+                    else "current assets < adjusted current liabilities"
                 )
             )
-            if cr < 1.0:
+            if cr < 0.5:
                 red_flags.append(
-                    f"Current ratio {cr:.2f}x — cannot cover short-term obligations; "
-                    "liquidity crisis risk if credit tightens"
+                    f"Adj. current ratio {cr:.2f}x{deferred_note} — "
+                    "severe liquidity risk, cannot cover near-term obligations"
                 )
         else:
             r3_desc = "Current ratio data unavailable"
@@ -562,36 +577,49 @@ class AntiMoatInvestor(BaseInvestor):
         ))
 
         # ── Rule 9: Asset Base Investment (5 pts) ─────────────────────────────
-        # CapEx / Depreciation >= 0.75x
-        # Below 0.75x = company is under-investing in its asset base (harvest mode)
+        # For capital-intensive companies: CapEx / D&A >= 0.75x
+        # For asset-light companies (CapEx/Revenue < 5%): (CapEx + R&D) / D&A >= 0.75x
+        # R&D is the primary investment for software/tech companies; using CapEx alone
+        # would falsely flag every SaaS business as "harvest mode".
         capex_s = data.capex_series
         capex_v = capex_s[-1] if capex_s else None
         depreciation = self._depreciation_latest(data)
+        rev_s = data.revenue_series
+        rd_s = data.rd_expense_series
         capex_dep_ratio: Optional[float] = None
         r9_passed = False
         r9_desc = "Insufficient data for asset base investment check"
         try:
             if capex_v is not None and depreciation is not None and depreciation > 0:
-                capex_dep_ratio = capex_v / depreciation
+                # Determine if asset-light: CapEx/Revenue < 5%
+                is_asset_light = (
+                    rev_s and rev_s[-1] > 0
+                    and capex_v / rev_s[-1] < 0.05
+                )
+                if is_asset_light and rd_s:
+                    numerator = capex_v + rd_s[-1]
+                    formula_label = f"(CapEx+R&D)=${numerator/1e9:.1f}B"
+                else:
+                    numerator = capex_v
+                    formula_label = f"CapEx=${capex_v/1e9:.1f}B"
+                capex_dep_ratio = numerator / depreciation
                 r9_passed = capex_dep_ratio >= 0.75
                 r9_desc = (
-                    f"CapEx/Depreciation={capex_dep_ratio:.2f}x "
-                    f"(CapEx=${capex_v/1e9:.1f}B, D&A=${depreciation/1e9:.1f}B) — "
+                    f"{formula_label}/D&A=${depreciation/1e9:.1f}B = {capex_dep_ratio:.2f}x — "
                     + (
-                        "investing at or above asset replacement rate; no harvest-mode signal"
+                        "investing at or above asset replacement rate"
                         if r9_passed
-                        else "CapEx/D&A below 0.75x for 3+ years — under-investing; "
-                        "asset base is deteriorating (harvest mode)"
+                        else "below replacement rate — potential harvest mode"
                     )
                 )
                 if capex_dep_ratio < 0.5:
                     red_flags.append(
-                        f"CapEx/Depreciation {capex_dep_ratio:.2f}x — severe under-investment; "
-                        "company in harvest mode, consuming its asset base"
+                        f"{formula_label}/D&A {capex_dep_ratio:.2f}x — "
+                        "severe under-investment; company in harvest mode"
                     )
                 elif capex_dep_ratio < 0.75:
                     red_flags.append(
-                        f"CapEx/Depreciation {capex_dep_ratio:.2f}x — "
+                        f"{formula_label}/D&A {capex_dep_ratio:.2f}x — "
                         "below replacement rate; long-term competitiveness at risk"
                     )
         except Exception as e:

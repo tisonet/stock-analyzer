@@ -146,6 +146,18 @@ class FinancialData:
         )
 
     @property
+    def current_deferred_revenue(self) -> Optional[float]:
+        """Current deferred revenue — collected cash not yet recognised as revenue.
+        Not a cash obligation; excluded from adjusted current ratio calculations."""
+        val = self._latest(
+            self.balance_sheet,
+            "Current Deferred Revenue",
+            "Current Deferred Liabilities",
+            "Deferred Revenue",
+        )
+        return abs(val) if val is not None else None
+
+    @property
     def total_liabilities(self) -> Optional[float]:
         return self._latest(
             self.balance_sheet, "Total Liabilities Net Minority Interest", "Total Liabilities"
