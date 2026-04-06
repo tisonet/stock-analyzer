@@ -205,11 +205,43 @@ class BuffettInvestor(BaseInvestor):
         if buyback_positive is False:
             red_flags.append("Share count rising — management diluting existing shareholders")
 
-        # ── Rule 7: Low downside volatility (max drawdown penalty) — 5 pts ─
+        # ── Rule 7: Gross Margin > 40% and Consistent (stdev < 5pp) — 10 pts ─
+        # High, stable gross margins signal durable pricing power — a hallmark
+        # of Buffett's "wonderful businesses" (See's Candies, Coca-Cola, etc.)
+        gm_series = data.gross_margin_series
+        gm_avg = None
+        gm_stdev = None
+        if len(gm_series) >= 3:
+            gm_avg = statistics.mean(gm_series) * 100
+            gm_stdev = statistics.stdev(gm_series) * 100
+        r7_gm_passed = (
+            (gm_avg >= 40.0 and gm_stdev < 5.0)
+            if (gm_avg is not None and gm_stdev is not None)
+            else None
+        )
+        r7_gm = self._make_rule(
+            name="Gross Margin > 40% and Consistent (stdev < 5%)",
+            value=gm_avg,
+            threshold=40.0,
+            points_possible=10.0,
+            description=(
+                f"Gross margin avg={gm_avg:.1f}%, stdev={gm_stdev:.1f}%"
+                if gm_avg is not None
+                else "Insufficient gross margin history"
+            ),
+            source="Berkshire Hathaway Annual Letters; The Warren Buffett Way",
+            passed=r7_gm_passed,
+            explanation="High, stable gross margins (>40%) indicate the business has durable pricing power and a sustainable competitive moat — customers pay a premium consistently. Volatility above 5% suggests the advantage may be eroding or cyclical.",
+        )
+        rules.append(r7_gm)
+        if not r7_gm_passed and gm_avg is not None and gm_avg < 20.0:
+            red_flags.append(f"Gross margin {gm_avg:.1f}% — commodity-like business, no pricing power")
+
+        # ── Rule 8: Low downside volatility (max drawdown penalty) — 5 pts ─
         # "Rule No. 1: Never lose money. Rule No. 2: Never forget rule No. 1."
         max_dd = data.max_drawdown
         dd_pct = abs(max_dd) * 100 if max_dd is not None else None
-        r7 = self._make_rule(
+        r8 = self._make_rule(
             name="Low downside volatility (max drawdown < 40%)",
             value=dd_pct,
             threshold=40.0,
@@ -223,8 +255,8 @@ class BuffettInvestor(BaseInvestor):
             passed=dd_pct < 40.0 if dd_pct is not None else None,
             explanation="Maximum drawdown measures the worst peak-to-trough price decline over 10 years. A drawdown below 40% suggests the stock has historically avoided catastrophic losses — consistent with Buffett's Rule #1: never lose money.",
         )
-        rules.append(r7)
-        if not r7.passed and dd_pct is not None and dd_pct > 60:
+        rules.append(r8)
+        if not r8.passed and dd_pct is not None and dd_pct > 60:
             red_flags.append(
                 f"Stock lost {dd_pct:.0f}% at worst — high permanent capital loss risk"
             )
