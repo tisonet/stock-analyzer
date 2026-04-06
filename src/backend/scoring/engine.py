@@ -17,7 +17,6 @@ from src.backend.investors.buffett import BuffettInvestor
 from src.backend.investors.munger import MungerInvestor
 from src.backend.investors.lynch import LynchInvestor
 from src.backend.investors.dalio import DalioInvestor
-from src.backend.investors.klarman import KlarmanInvestor
 from src.backend.investors.terry_smith import TerrySmithInvestor
 from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
@@ -39,7 +38,6 @@ INVESTORS = [
     MungerInvestor(),
     LynchInvestor(),
     DalioInvestor(),
-    KlarmanInvestor(),
     TerrySmithInvestor(),
     IcahnInvestor(),
     AKOQualityInvestor(),
@@ -75,11 +73,6 @@ INVESTOR_VOICES: dict[str, str] = {
         "You are Ray Dalio. Speak about the economic machine, debt cycles, and "
         "how this company fits across the four economic seasons. "
         "Reference principles and systematic thinking."
-    ),
-    "Klarman": (
-        "You are Seth Klarman. Be highly cautious and emphasise downside risk. "
-        "Reference margin of safety as the primary concept. "
-        "Express skepticism about market efficiency and overpaying."
     ),
     "Terry Smith": (
         "You are Terry Smith, founder of Fundsmith. Be direct and no-nonsense. "

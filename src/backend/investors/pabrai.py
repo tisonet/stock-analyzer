@@ -43,17 +43,22 @@ class PabraiInvestor(BaseInvestor):
         rules: list[Rule] = []
         red_flags: list[str] = []
 
-        # ── Rule 1: Low Leverage (D/E < 0.3) — 20 pts ───────────────────
+        # ── Rule 1: Low Leverage (Net D/E < 0.3) — 20 pts ──────────────────
         # "The single biggest reason why investments don't work out is leverage."
         # — Pabrai, Columbia Business School lecture
-        # His checklist dedicates ~30% of questions to leverage risk.
-        de = data.debt_to_equity
+        # Uses net debt (debt − cash) so cash-rich companies aren't penalised
+        # for holding gross debt they could repay immediately.
+        gross_debt = data.total_debt
+        cash_eq = data.cash_and_equivalents
+        equity = data.stockholders_equity
+        net_debt = max(0.0, (gross_debt or 0.0) - (cash_eq or 0.0))
+        de = net_debt / equity if equity and equity > 0 else data.debt_to_equity
         if de is not None and de > 10:
             de = de / 100
         de_pts = 0.0
         if de is not None:
             if de <= 0.0:
-                de_pts = 20.0  # zero debt = perfect
+                de_pts = 20.0  # net cash position = perfect
             elif de <= 0.3:
                 de_pts = 20.0
             elif de <= 0.5:
@@ -61,28 +66,29 @@ class PabraiInvestor(BaseInvestor):
             else:
                 de_pts = 0.0
         from src.backend.investors.base_investor import Rule as R
+        net_debt_desc = (
+            f"net D/E = {de:.2f} (debt ${(gross_debt or 0)/1e9:.1f}B − cash ${(cash_eq or 0)/1e9:.1f}B)"
+            if de is not None else "D/E unavailable"
+        )
         rules.append(R(
-            name="Low Leverage (D/E < 0.3)",
+            name="Low Leverage (net D/E < 0.3)",
             passed=de is not None and de <= 0.3,
             value=de,
             threshold=0.3,
             points_awarded=de_pts,
             points_possible=20.0,
-            description=(
-                f"D/E = {de:.2f}"
-                + (" — zero debt, Pabrai's ideal" if de is not None and de <= 0 else "")
-                if de is not None else "D/E unavailable"
-            ),
+            description=net_debt_desc,
             source="The Dhandho Investor, Ch.2 — Minimize downside risk",
             explanation=(
                 "Pabrai identifies leverage as the #1 reason investments fail. "
-                "His checklist dedicates ~30% of questions to leverage risk. "
-                "Zero debt is ideal; D/E below 0.3 provides strong downside protection."
+                "Uses net debt (total debt minus cash) so companies with large cash "
+                "balances aren't penalised for gross debt they could retire immediately. "
+                "Net D/E below 0.3 provides strong downside protection."
             ),
         ))
         if de is not None and de > 1.0:
             red_flags.append(
-                f"D/E = {de:.1f} — leverage is Pabrai's top risk factor"
+                f"Net D/E = {de:.1f} — leverage is Pabrai's top risk factor"
             )
 
         # ── Rule 2: High ROIC (10yr avg > 15%) — 15 pts ─────────────────
@@ -186,23 +192,35 @@ class PabraiInvestor(BaseInvestor):
         if rev and market_cap and market_cap > 0 and rev[-1] > 0:
             ps_ratio = market_cap / rev[-1]
 
+        median_ps = self._median_ps_ratio(data)
         cannibal = False
         cannibal_desc = "Share count history unavailable"
         if len(shares) >= 3:
             share_declining = shares[-1] < shares[0]
             if share_declining:
                 reduction_pct = (1 - shares[-1] / shares[0]) * 100
-                if ps_ratio is not None and ps_ratio < 2.5:
-                    cannibal = True
-                    cannibal_desc = (
-                        f"Shares down {reduction_pct:.1f}% + P/S = {ps_ratio:.1f}x "
-                        f"— buying back at reasonable valuations"
+                cheap_absolute = ps_ratio is not None and ps_ratio < 2.5
+                cheap_relative = (
+                    ps_ratio is not None
+                    and median_ps is not None
+                    and ps_ratio < median_ps
+                )
+                cannibal = cheap_absolute or cheap_relative
+                if ps_ratio is not None:
+                    hist_ctx = (
+                        f", hist. median {median_ps:.1f}x" if median_ps is not None else ""
                     )
-                elif ps_ratio is not None:
-                    cannibal_desc = (
-                        f"Shares down {reduction_pct:.1f}% but P/S = {ps_ratio:.1f}x > 2.5 "
-                        f"— buybacks at expensive prices"
-                    )
+                    if cannibal:
+                        reason = "below 2.5x" if cheap_absolute else f"below own median ({median_ps:.1f}x)"
+                        cannibal_desc = (
+                            f"Shares down {reduction_pct:.1f}%, P/S = {ps_ratio:.1f}x{hist_ctx} "
+                            f"— buybacks {reason}"
+                        )
+                    else:
+                        cannibal_desc = (
+                            f"Shares down {reduction_pct:.1f}%, P/S = {ps_ratio:.1f}x{hist_ctx} "
+                            f"— buybacks above absolute (2.5x) and historical median"
+                        )
                 else:
                     cannibal_desc = f"Shares down {reduction_pct:.1f}% (P/S unavailable)"
             else:
@@ -218,9 +236,10 @@ class PabraiInvestor(BaseInvestor):
             passed=cannibal,
             explanation=(
                 "Pabrai's Uber Cannibals are companies aggressively reducing share count "
-                "at reasonable valuations (P/S < 2.5). The formula: Earnings Growth x "
-                "(100 / share % left) x Multiple Expansion. This screen returned 15.5% "
-                "annualized (1992-2016) vs 9.2% for the S&P 500."
+                "at reasonable valuations. Passes if P/S < 2.5 (absolute) or below the "
+                "company's own historical median P/S (relative) — the latter rewards premium "
+                "businesses buying back at a discount to their own normal valuation. "
+                "This screen returned 15.5% annualized (1992-2016) vs 9.2% for the S&P 500."
             ),
         )
         rules.append(r5)
@@ -296,6 +315,30 @@ class PabraiInvestor(BaseInvestor):
         return self._build_result(rules, red_flags)
 
     # ──────────────────────────────────────────────────────────────────────
+    def _median_ps_ratio(self, data: "FinancialData") -> float | None:
+        """
+        Historical median P/S ratio using year-end prices from price history
+        paired with annual revenue. Uses current shares as approximation.
+        """
+        rev = data.revenue_series
+        history = data.history
+        shares = data.info.get("sharesOutstanding")
+        if len(rev) < 3 or history.empty or not shares or shares == 0:
+            return None
+        try:
+            yearly_close = history["Close"].groupby(history.index.year).last()
+            n = min(len(rev), len(yearly_close), 5)
+            rev_w = rev[-n:]
+            prices_w = yearly_close.iloc[-n:]
+            ps_vals = [
+                (float(p) * shares) / r
+                for p, r in zip(prices_w, rev_w)
+                if r > 0
+            ]
+            return statistics.median(ps_vals) if ps_vals else None
+        except Exception:
+            return None
+
     def _simple_dcf(
         self, data: "FinancialData"
     ) -> tuple[float | None, str]:
