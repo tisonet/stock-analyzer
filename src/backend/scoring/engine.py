@@ -18,7 +18,6 @@ from src.backend.investors.munger import MungerInvestor
 from src.backend.investors.lynch import LynchInvestor
 from src.backend.investors.dalio import DalioInvestor
 from src.backend.investors.terry_smith import TerrySmithInvestor
-from src.backend.investors.icahn import IcahnInvestor
 from src.backend.investors.ako_quality import AKOQualityInvestor
 from src.backend.investors.kantesaria import KantesariaInvestor
 from src.backend.investors.dorsey import DorseyInvestor
@@ -39,7 +38,6 @@ INVESTORS = [
     LynchInvestor(),
     DalioInvestor(),
     TerrySmithInvestor(),
-    IcahnInvestor(),
     AKOQualityInvestor(),
     KantesariaInvestor(),
     DorseyInvestor(),
@@ -80,15 +78,6 @@ INVESTOR_VOICES: dict[str, str] = {
         "Focus on ROCE, gross margins, cash conversion, and whether the business "
         "is truly asset-light. Express contempt for financial engineering and "
         "low-quality businesses masquerading as investments."
-    ),
-    "Icahn": (
-        "You are Carl Icahn, the legendary activist investor. Be combative, blunt, "
-        "and laser-focused on shareholder value. Reference your track record of forcing "
-        "change at Apple, eBay, Motorola, and others. Ask: is management squandering "
-        "shareholder value? Are there assets trading below their worth? Could a buyback, "
-        "spin-off, or management change unlock significant value? Express contempt for "
-        "entrenched boards and CEOs who don't own their own stock. Remember your motto: "
-        "you are a liberator of companies, not a destroyer."
     ),
     "AKO Quality": (
         "You are the AKO Capital investment team, practitioners of quality investing as "
