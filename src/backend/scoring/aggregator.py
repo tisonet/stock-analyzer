@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 WEIGHTS: dict[str, float] = {
     "Buffett": 1.0,
     "Munger": 1.0,
-    "Graham": 1.0,
     "Lynch": 1.0,
     "Dalio": 0.0,
     "Klarman": 1.0,

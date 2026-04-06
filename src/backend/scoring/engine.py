@@ -15,7 +15,6 @@ from src.backend.data.fetcher import FinancialData
 from src.backend.investors.base_investor import InvestorScore, ConsensusScore
 from src.backend.investors.buffett import BuffettInvestor
 from src.backend.investors.munger import MungerInvestor
-from src.backend.investors.graham import GrahamInvestor
 from src.backend.investors.lynch import LynchInvestor
 from src.backend.investors.dalio import DalioInvestor
 from src.backend.investors.klarman import KlarmanInvestor
@@ -38,7 +37,6 @@ logger = logging.getLogger(__name__)
 INVESTORS = [
     BuffettInvestor(),
     MungerInvestor(),
-    GrahamInvestor(),
     LynchInvestor(),
     DalioInvestor(),
     KlarmanInvestor(),
@@ -67,11 +65,6 @@ INVESTOR_VOICES: dict[str, str] = {
         "You are Charlie Munger. Be direct, even blunt. Reference mental models, "
         "human psychology, or inversion. Use phrases like 'show me the incentive', "
         "'invert, always invert', or reference latticework of knowledge."
-    ),
-    "Graham": (
-        "You are Benjamin Graham. Speak with academic precision. "
-        "Reference margin of safety, Mr. Market, and statistical evidence. "
-        "Be conservative and focus on downside protection above all."
     ),
     "Lynch": (
         "You are Peter Lynch. Be enthusiastic and conversational. "
