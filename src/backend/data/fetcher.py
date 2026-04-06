@@ -109,6 +109,26 @@ class FinancialData:
                 margins.append(gp[i] / rev[i])
         return margins
 
+    @property
+    def interest_expense(self) -> Optional[float]:
+        val = self._latest(
+            self.income_stmt,
+            "Interest Expense",
+            "Interest Expense Non Operating",
+            "Net Interest Income",
+        )
+        return abs(val) if val is not None else None
+
+    @property
+    def rd_expense_series(self) -> list[float]:
+        raw = self._series(
+            self.income_stmt,
+            "Research And Development",
+            "Research Development",
+            "Research And Development Expenses",
+        )
+        return [abs(v) for v in raw]
+
     # ---------------------------------------------------------------- balance sheet
 
     @property
